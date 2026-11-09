@@ -4,7 +4,7 @@ The Chrome Extension client for WebMate, built with [WXT](https://wxt.dev/), Rea
 
 ## Overview
 
-WebMate is designed to run as a Chrome Extension Manifest V3 companion. In later phases, it injects a floating cartoon character into supported webpages via an isolated Shadow DOM container, enabling website explanations, element-level inspection, and interactive AI assistance.
+WebMate is designed to run as a Chrome Extension Manifest V3 companion. It injects an isolated UI container (`<webmate-root>`) into supported webpages via an open Shadow DOM tree, enabling companion UI rendering without style bleeding or layout disruption.
 
 ## Technology Stack
 
@@ -20,17 +20,31 @@ WebMate is designed to run as a Chrome Extension Manifest V3 companion. In later
 ```
 apps/extension/
 ├── entrypoints/
-│   ├── background.ts       # Manifest V3 Background Service Worker
-│   └── popup/              # Action popup UI
+│   ├── background.ts               # Manifest V3 Background Service Worker
+│   ├── content/                    # Content script injected into HTTP/HTTPS pages
+│   │   ├── index.ts                # Content script entrypoint
+│   │   └── style.css               # Scoped Tailwind CSS & Shadow DOM resets
+│   └── popup/                      # Action popup UI
 │       ├── index.html
 │       ├── main.tsx
 │       ├── App.tsx
 │       └── style.css
+├── src/
+│   └── content/
+│       ├── mount.ts                # Modular Shadow DOM mounting & idempotency manager
+│       ├── FloatingCompanion.tsx   # Draggable floating container with docking transitions
+│       ├── CompanionPlaceholder.tsx # Minimal navy-and-white companion placeholder
+│       ├── useDraggable.ts         # Pointer events, pointer capture, rAF throttling hook
+│       ├── docking.ts              # Viewport clamping and horizontal edge docking algorithms
+│       ├── storage.ts              # Chrome Storage API (chrome.storage.local) persistence
+│       └── store.ts                # Zustand runtime state store for positioning and docking
+├── assets/
+│   └── character/                  # Asset manifests, schemas, and ingestion guides
 ├── package.json
 ├── tsconfig.json
-├── wxt.config.ts           # WXT configuration & manifest definition
-├── tailwind.config.js      # Tailwind configuration
-├── postcss.config.js       # PostCSS configuration
+├── wxt.config.ts                   # WXT configuration & manifest definition
+├── tailwind.config.js              # Tailwind configuration
+├── postcss.config.js               # PostCSS configuration
 └── README.md
 ```
 
@@ -46,6 +60,14 @@ Inside `apps/extension`:
 - `pnpm build` — Build extension for Chrome MV3.
 - `pnpm zip` — Package extension zip for Chrome Web Store distribution.
 
-## Current Status (Phase 0)
+## Current Status (Phase 1, Step 3)
 
-Phase 0 establishes the directory structure, configuration files, and baseline entrypoints. Floating character UI, animation drivers, website content scraping, and element inspection will be developed in subsequent phases according to the project roadmap.
+Phase 1, Step 3 implements the draggable floating companion and docking system:
+- **Pointer Interaction**: Full support for mouse, touch, and pen via Pointer Events with pointer capture and drag threshold.
+- **Viewport Docking**: Automatic left/right edge snapping with a 20px screen margin and clamped vertical position.
+- **Position Persistence**: State restoration and persistence using `chrome.storage.local` with normalized vertical coordinates for responsive window resizing.
+- **Performance**: GPU-accelerated `translate3d` positioning and `requestAnimationFrame` render throttling.
+- **State Architecture**: Centralized Zustand extension store (`useCompanionStore`).
+
+**Next Steps**:
+- Phase 2: Articulated character vector rig, animation state engine, and lip-sync driver.

@@ -67,13 +67,16 @@ The extension follows the Chrome Manifest V3 execution model, split into three d
   - Manages cross-tab state, persistent extension settings in `chrome.storage.local`.
   - Dispatches messages to active content scripts.
 
-### B. Content Script & Shadow DOM Injection
+### B. Content Script & Shadow DOM Injection (`entrypoints/content/`)
 - **Role**: Injected bridge living within the webpage context.
 - **Responsibilities**:
-  - Injects a custom container element (`#webmate-host`) into the host page `document.body`.
-  - Attaches a **Shadow DOM** (`shadowRoot = host.attachShadow({ mode: 'open' })`).
-  - Renders the React root into the Shadow DOM.
-  - Listens to host page mouse events exclusively when "Inspect Element" mode is activated.
+  - Validates host webpage URL compatibility (HTTP/HTTPS only; excludes internal schemes).
+  - Enforces singleton mounting (guards against duplicate `<webmate-root>` injection).
+  - Injects a dedicated custom element (`<webmate-root>`) appended to `document.body`.
+  - Attaches an **open Shadow DOM** (`shadowRoot = host.attachShadow({ mode: 'open' })`).
+  - Scopes Tailwind CSS and CSS resets inside the Shadow Root.
+  - Renders WebMate's React 18 application tree into `#webmate-app-root`.
+  - Handles graceful unmounting on extension invalidation or page unload.
 
 ### C. Extension Action Popup (`entrypoints/popup/`)
 - **Role**: Quick toolbar interface.
@@ -86,7 +89,7 @@ The extension follows the Chrome Manifest V3 execution model, split into three d
 ## 3. Shadow DOM Isolation Strategy
 
 Injecting custom UI into arbitrary third-party websites presents significant styling and DOM conflict risks:
-1. Host CSS rules (e.g. `* { box-sizing: border-box; font-family: ... }` or resets) can corrupt companion elements.
+1. Host CSS rules (e.g. `* { box-sizing: border-box; font-family: ... }` or resets) could corrupt companion elements.
 2. Companion CSS rules could inadvertently alter host page layout and typography.
 3. Host page JavaScript could traverse and manipulate extension DOM nodes.
 
@@ -97,27 +100,58 @@ Injecting custom UI into arbitrary third-party websites presents significant sty
 |   <div class="header">...</div>                       |
 |   <main class="content">...</div>                     |
 |                                                       |
-|   <div id="webmate-host">                             |
+|   <webmate-root>                                      |
 |     #shadow-root (open)                               |
 |       +---------------------------------------------+ |
-|       | <style> /* Scoped WebMate CSS */ </style>   | |
-|       | <div class="webmate-container">             | |
-|       |   <svg id="character-rig">...</svg>         | |
-|       |   <div class="chat-drawer">...</div>        | |
+|       | <style> /* Scoped WebMate Tailwind CSS */ </style> |
+|       | <div id="webmate-app-root">                 | |
+|       |   <!-- Phase 1 Step 2: Placeholder UI -->   | |
+|       |   <div class="webmate-card">...</div>       | |
+|       |   <!-- Phase 2+: Planned Character Rig -->  | |
 |       | </div>                                      | |
 |       +---------------------------------------------+ |
-|   </div>                                              |
+|   </webmate-root>                                     |
 +-------------------------------------------------------+
 ```
 
-### Isolation Rules:
+### Isolation & Interaction Rules:
 - All extension markup lives inside `#shadow-root`.
-- Tailwind CSS styles are compiled and injected directly inside the shadow root via `<style>` tag insertion or `adoptedStyleSheets`.
-- Events generated inside the Shadow DOM (clicks on chat input, character drag events) stop propagation to host DOM listeners where appropriate to prevent triggering host website interactions.
+- Host element `<webmate-root>` uses `:host { all: initial; position: fixed !important; top: 0 !important; left: 0 !important; width: 0 !important; height: 0 !important; overflow: visible !important; z-index: 2147483647 !important; pointer-events: none !important; }` to anchor at the viewport origin without intercepting host clicks or blocking page layouts.
+- Inner container `#webmate-app-root` applies `all: initial` and explicit system font resets, keeping `pointer-events: none`.
+- Draggable container `#webmate-floating-container` re-enables `pointer-events: auto`, ensuring that ONLY interactions with the companion card are captured.
+- Tailwind CSS styles are compiled and injected directly inside the shadow root via WXT's `cssInjectionMode: 'ui'`.
+- Events generated inside the Shadow DOM (clicks on companion elements) are isolated from host listeners.
 
 ---
 
-## 4. Character Animation Subsystem (Planned Architecture)
+## 4. Draggable Floating Companion & Docking System (Implemented in Phase 1, Step 3)
+
+WebMate provides a complete floating companion interaction system:
+
+```mermaid
+flowchart TD
+    PD[Pointer Down] --> TH{Delta >= 4px?}
+    TH -- No --> TAP[Preserve Tap / Click]
+    TH -- Yes --> DRAG[Set Pointer Capture & isDragging = true]
+    DRAG --> MOVE[Pointer Move: Clamp to Viewport & rAF Throttle]
+    MOVE --> REL[Pointer Up / Cancel]
+    REL --> DOCK[Detect Nearest Edge: Left vs Right]
+    DOCK --> SNAP[Snap to Edge with 20px Screen Margin & Vertical Clamp]
+    SNAP --> STORE[Persist Position to chrome.storage.local]
+```
+
+### Key Technical Mechanisms:
+1. **Pointer Interaction**: Uses W3C Pointer Events (`onPointerDown`, `onPointerMove`, `onPointerUp`, `onPointerCancel`) to natively support mouse, touch, and pen styluses.
+2. **Pointer Capture**: Explicitly invokes `setPointerCapture(pointerId)` upon crossing the 4px drag threshold, ensuring continuous tracking even if the cursor moves rapidly outside the card boundary.
+3. **Ghost Drag & Selection Protection**: Card styles enforce `user-select: none` and `touch-action: none` to prevent accidental text selection or viewport scroll interference during dragging.
+4. **GPU-Accelerated Smooth Motion**: Card translation uses `transform: translate3d(x, y, 0)` updated via `requestAnimationFrame` throttling, avoiding layout reflows and guaranteeing 60fps responsiveness.
+5. **Horizontal Edge Docking**: When released, WebMate calculates the card midpoint relative to the viewport width and smoothly transitions to the nearest edge (left or right) maintaining a comfortable 20px margin and preserving vertical positioning.
+6. **Position Persistence**: State is serialized to `chrome.storage.local` with both absolute coordinates and normalized vertical ratios (`relativeY`), ensuring that resizing or navigating between differently sized windows preserves natural relative vertical placement.
+7. **Graceful Degradation**: If Chrome Storage APIs are unavailable, WebMate gracefully defaults to memory state without throwing errors or interrupting page execution.
+
+---
+
+## 5. Character Animation Subsystem (Planned Architecture)
 
 > [!NOTE]
 > **Implementation Status**: The articulated character rig, animation controller, dynamic pointing system, and mouth animation driver described below represent the **planned architectural design** scheduled for implementation in Phase 2. No character renderer or animation engine currently exists in the codebase.

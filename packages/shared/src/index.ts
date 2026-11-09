@@ -47,6 +47,32 @@ export type CharacterAnimationState =
 export type CharacterState = CharacterAnimationState | 'pointing' | 'surprised' | 'confused';
 
 /**
+ * Horizontal edge docking orientation for the floating companion container.
+ */
+export type DockSide = 'left' | 'right';
+
+/**
+ * Coordinate position and docking configuration for the floating companion.
+ */
+export interface CompanionPosition {
+  x: number;
+  y: number;
+  dockSide: DockSide;
+}
+
+/**
+ * Schema for companion positioning persisted in chrome.storage.local.
+ * Includes proportional vertical offset for responsive window height restoration.
+ */
+export interface StoredCompanionPosition {
+  x: number;
+  y: number;
+  dockSide: DockSide;
+  relativeY: number;
+  updatedAt: number;
+}
+
+/**
  * Structural definition for character rig anchor coordinates (pivot points).
  */
 export interface CharacterAnchorCoordinates {

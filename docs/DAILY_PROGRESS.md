@@ -66,6 +66,73 @@ This log tracks day-by-day development milestones, decisions, completed tasks, a
 
 ---
 
+### Session 5: Content Script Injection & Shadow DOM Isolation (Phase 1, Step 2)
+- **Focus**: Implement content script injection and isolated Shadow DOM mounting infrastructure with a minimal navy-and-white companion placeholder.
+- **Accomplishments**:
+  - `apps/extension/src/content/mount.ts`:
+    - Implemented `isSupportedPage()` URL validation (HTTP/HTTPS only; ignores browser internal schemes and non-HTML documents).
+    - Implemented `isAlreadyMounted()` idempotency check to guarantee singleton mounting and avoid duplicate `<webmate-root>` elements.
+    - Implemented `mountWebMate(ctx)` using WXT `createShadowRootUi` attaching open Shadow Root to `<webmate-root>`.
+    - Implemented safe React 18 root mounting inside `#webmate-app-root` and hooked `ctx.onInvalidated` for clean teardown.
+    - Implemented `unmountWebMate()` cleanup routine.
+  - `apps/extension/src/content/CompanionPlaceholder.tsx`:
+    - Designed minimal, polished navy-and-white companion card (232px × 68px) with "WM" logo badge, "WebMate" title, version pill, and active status pulse.
+    - Set fixed inline CSS properties + Tailwind classes for bulletproof styling immunity against host page CSS resets and font overrides.
+  - `apps/extension/entrypoints/content/style.css`:
+    - Scoped Tailwind CSS directives inside the Shadow DOM boundary (`cssInjectionMode: 'ui'`).
+    - Configured `:host` with `all: initial`, `position: fixed`, `bottom: 24px`, `right: 24px`, `z-index: 2147483647`, and `pointer-events: none` to prevent blocking host page interactions.
+    - Configured `#webmate-app-root` with `all: initial`, `pointer-events: auto`, system font family, and `box-sizing: border-box`.
+  - `apps/extension/entrypoints/content/index.ts`:
+    - Implemented WXT content script entrypoint targeting `['http://*/*', 'https://*/*']` with `runAt: 'document_idle'`.
+  - `apps/extension/wxt.config.ts`:
+    - Declared explicit `host_permissions: ['http://*/*', 'https://*/*']` in extension manifest.
+  - Documentation Updates:
+    - Updated `apps/extension/README.md` with new content script file structure and current status.
+    - Updated `docs/ARCHITECTURE.md` Section 2 & 3 reflecting `<webmate-root>`, Shadow DOM mounting, and CSS isolation.
+    - Updated `docs/DEVELOPMENT_ROADMAP.md` annotating Phase 1 Step 2 as completed.
+
+---
+
+### Session 6: Draggable Floating Companion & Docking System (Phase 1, Step 3)
+- **Focus**: Implement smooth pointer-driven dragging, automatic left/right edge docking with viewport margins, Chrome Storage position persistence, and Zustand extension store.
+- **Accomplishments**:
+  - `packages/shared/src/index.ts`:
+    - Added `DockSide` ('left' | 'right'), `CompanionPosition`, and `StoredCompanionPosition` data contracts.
+  - `apps/extension/src/content/docking.ts`:
+    - Implemented `calculateDefaultPosition` anchoring companion to bottom-right with standard margins.
+    - Implemented `clampToViewport` restricting 2D coordinates within visible viewport boundaries during active drag.
+    - Implemented `calculateDockPosition` snapping to nearest horizontal edge (left vs right) with 20px screen margin and clamped vertical position.
+    - Implemented `calculateRelativeY` and `calculatePositionFromRelativeY` for normalized vertical percentage coordinates across window sizes.
+  - `apps/extension/src/content/storage.ts`:
+    - Implemented `loadSavedPosition` and `saveCompanionPosition` interacting with `chrome.storage.local`.
+    - Added coordinate validation and proportional vertical restoration across varying viewport heights.
+    - Enforced zero personal data/browsing history storage and graceful degradation when storage API is unavailable.
+  - `apps/extension/src/content/store.ts`:
+    - Built centralized Zustand store (`useCompanionStore`) tracking position, dockSide, isDragging, isVisible, and activeTab.
+  - `apps/extension/src/content/useDraggable.ts`:
+    - Implemented custom React drag hook handling mouse, touch, and pen via W3C Pointer Events.
+    - Integrated pointer capture (`setPointerCapture`) and 4px drag threshold to distinguish clicks from drags.
+    - Integrated `requestAnimationFrame` throttling for 60fps coordinate updates without layout thrashing.
+    - Bound debounced `window.resize` listener to maintain proper edge docking on viewport resize.
+  - `apps/extension/src/content/FloatingCompanion.tsx`:
+    - Created draggable floating container applying GPU-accelerated `translate3d` positioning.
+    - Configured grab/grabbing cursor states, `touch-action: none`, and `user-select: none`.
+    - Applied smooth cubic-bezier transitions when snapping to docked edge and zero latency during active drag.
+  - `apps/extension/src/content/CompanionPlaceholder.tsx`:
+    - Added `isDragging` prop with subtle elevation, border glow, and shadow scaling during drag gestures.
+  - `apps/extension/entrypoints/content/style.css`:
+    - Updated `:host` to zero-size top-left fixed anchor (`pointer-events: none !important`), delegating `pointer-events: auto` strictly to the floating card.
+  - `apps/extension/src/content/mount.ts`:
+    - Updated mounting logic to render `<FloatingCompanion />` inside the isolated Shadow Root.
+  - Documentation Updates:
+    - Updated `apps/extension/README.md`, `docs/ARCHITECTURE.md`, `docs/DEVELOPMENT_ROADMAP.md`, and `docs/DAILY_PROGRESS.md`.
+  - Code Review Corrections:
+    - Fixed resize docking in `apps/extension/src/content/docking.ts` with `recalculateDockedPosition`, preserving `dockSide` orientation during window resize.
+    - Improved pointer lifecycle safety in `apps/extension/src/content/useDraggable.ts` with idempotent `finalizeDrag`, `onLostPointerCapture`, `window.blur` handling, and rAF frame cancellation.
+    - Removed redundant broad `host_permissions` in `apps/extension/wxt.config.ts`, retaining native content script matches and `storage` permission.
+
+---
+
 ## Daily Log Entry Template (For Future Updates)
 
 ```markdown

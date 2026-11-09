@@ -62,16 +62,23 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
   - [x] Layered rig breakdown (Body, Head, Eyes, Eyelids, Mouth, Arms, FX) and justification over flat PNGs.
   - [x] Asset directory architecture and manifest schema.
   - [x] Third-party copyright protection guidelines.
-- [ ] **Step 2: Content Script & Shadow DOM Container Mount**:
-  - [ ] Implement WXT content script entrypoint.
-  - [ ] Mount `<div id="webmate-root">` with an encapsulated Shadow DOM tree (`attachShadow({ mode: 'open' })`).
-  - [ ] Inject scoped Tailwind CSS styles into the shadow root without host page leaking.
-  - [ ] Establish two-way messaging between Content Script and Background Service Worker.
-- [ ] **Step 3: Floating Container & Positioning State**:
-  - [ ] Implement Zustand extension state store (visibility, active tab, dock position).
-  - [ ] Build baseline draggable floating container component with edge snapping.
+- [x] **Step 2: Content Script & Shadow DOM Container Mount**:
+  - [x] Implement WXT content script entrypoint targeting HTTP/HTTPS websites.
+  - [x] Mount `<webmate-root>` custom element with open Shadow DOM (`attachShadow({ mode: 'open' })`).
+  - [x] Inject scoped Tailwind CSS and CSS resets inside the shadow root without host page leaking.
+  - [x] Render React 18 application inside `#webmate-app-root` with clean unmount lifecycle.
+  - [x] Render minimal navy-and-white companion placeholder UI at bottom-right (24px margin, high z-index).
+  - [x] Enforce singleton mounting idempotency and safe cleanup on extension invalidation.
+- [x] **Step 3: Floating Container & Positioning State**:
+  - [x] Implement Zustand extension state store (`useCompanionStore`) for positioning, active tab, visibility, and dockSide.
+  - [x] Build draggable floating container component (`FloatingCompanion.tsx`) with GPU-accelerated `translate3d`.
+  - [x] Implement pointer interaction supporting mouse, touch, and pen via Pointer Events with pointer capture.
+  - [x] Implement drag threshold (4px), accidental text selection prevention, and touch scroll suppression (`touch-action: none`).
+  - [x] Implement horizontal edge docking system (left/right snapping with 20px screen margin and clamped vertical position).
+  - [x] Implement position persistence with `chrome.storage.local` with normalized vertical coordinates for responsive window height adjustments.
+  - [x] Handle viewport resizing and context invalidation cleanup safely.
 
-*Exit Gate*: Clean, unstyled container rendered inside Shadow DOM on test pages with zero style collision.
+*Exit Gate*: Fully draggable and dockable companion container isolated inside Shadow DOM with persistence across page navigation.
 
 ---
 

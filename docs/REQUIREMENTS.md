@@ -7,8 +7,8 @@ This document details the functional and non-functional requirements for the Web
 ## 1. Functional Requirements (FR)
 
 ### FR1: Floating Companion Display & Docking
-- **FR1.1**: The extension shall inject a floating companion container into supported web pages without disrupting the host page's layout or styles. *(Planned: Phase 1)*
-- **FR1.2**: The companion container must be draggable across the viewport edges and dock automatically to the closest margin. *(Planned: Phase 2)*
+- **FR1.1**: The extension shall inject a floating companion container into supported web pages without disrupting the host page's layout or styles. *(Implemented: Phase 1, Step 2)*
+- **FR1.2**: The companion container must be draggable across the viewport edges and dock automatically to the closest margin. *(Planned: Phase 1, Step 3)*
 - **FR1.3**: The companion must support minimize, collapse, and hide states. *(Planned: Phase 2)*
 
 ### FR2: Character States & Animation Engine
@@ -61,14 +61,16 @@ This document details the functional and non-functional requirements for the Web
 
 ---
 
-## 3. Requirements Traceability Matrix (Phase 0)
+## 3. Requirements Traceability Matrix
 
-| Requirement ID | Description | Planned Phase | Phase 0 Status |
+| Requirement ID | Description | Planned Phase | Current Status |
 | :--- | :--- | :--- | :--- |
-| **FR1.1 - FR1.3** | Floating Companion & Docking | Phase 1 & 2 | Not Implemented |
-| **FR2.1 - FR2.3** | Character Animation Engine | Phase 2 | Not Implemented |
-| **FR3.1 - FR3.2** | Webpage Summarization | Phase 4 | Not Implemented |
-| **FR4.1 - FR4.3** | Element Inspector & Explanation | Phase 4 | Not Implemented |
-| **FR5.1 - FR5.3** | Conversational AI Chat | Phase 3 | Not Implemented |
-| **FR6.1 - FR6.2** | Guided Navigation | Phase 5 | Not Implemented |
-| **NFR1 - NFR5** | Security, Privacy, Isolation Architecture | Continuous | Foundation Established |
+| **FR1.1** | Container & Shadow DOM Injection | Phase 1 | Implemented (Step 2) |
+| **FR1.2** | Draggable Companion & Docking | Phase 1 | Planned (Step 3) |
+| **FR1.3** | Minimize / Collapse States | Phase 2 | Planned |
+| **FR2.1 - FR2.3** | Character Animation Engine | Phase 2 | Planned |
+| **FR3.1 - FR3.2** | Webpage Summarization | Phase 4 | Planned |
+| **FR4.1 - FR4.3** | Element Inspector & Explanation | Phase 4 | Planned |
+| **FR5.1 - FR5.3** | Conversational AI Chat | Phase 3 | Planned |
+| **FR6.1 - FR6.2** | Guided Navigation | Phase 5 | Planned |
+| **NFR1 - NFR5** | Security, Privacy, Isolation Architecture | Continuous | Active (Shadow DOM Scoped) |
