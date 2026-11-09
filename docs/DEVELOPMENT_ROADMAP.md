@@ -8,11 +8,11 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 
 ```
 ┌────────────────────────┐
-│  Phase 0: Foundation   │ ◄─── CURRENT STATUS (Completed)
+│  Phase 0: Foundation   │ ◄─── COMPLETED
 └───────────┬────────────┘
             │
 ┌───────────▼────────────┐
-│ Phase 1: Core Ext & DOM│ ◄─── Next Phase
+│ Phase 1: Core Ext & DOM│ ◄─── IN PROGRESS (Step 1 Completed)
 └───────────┬────────────┘
             │
 ┌───────────▼────────────┐
@@ -36,7 +36,7 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 
 ## Phase Breakdown
 
-### Phase 0: Project Foundation (Current Milestone)
+### Phase 0: Project Foundation (Completed)
 **Goal**: Establish a scalable monorepo structure, build configurations, security guidelines, and architectural blueprints.
 
 - [x] Configure pnpm workspace (`apps/extension`, `apps/backend`, `packages/shared`).
@@ -52,14 +52,24 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 
 ---
 
-### Phase 1: Extension Core & Shadow DOM Scaffold (Planned)
-**Goal**: Establish the in-page injection mechanism and Shadow DOM runtime container.
+### Phase 1: Extension Core & Shadow DOM Scaffold (In Progress)
+**Goal**: Establish the character asset architecture, in-page injection mechanism, and Shadow DOM runtime container.
 
-- [ ] Implement WXT content script entrypoint.
-- [ ] Mount `<div id="webmate-root">` with an encapsulated Shadow DOM tree.
-- [ ] Inject scoped Tailwind CSS styles into the shadow root without host page leaking.
-- [ ] Implement Zustand extension state store (visibility, active tab, dock position).
-- [ ] Establish two-way messaging between Content Script and Background Service Worker.
+- [x] **Step 1: Character Asset Architecture**:
+  - [x] Technical architecture for integrating the Shinchan visual persona.
+  - [x] Specifications for 8 expressions (Normal, Happy, Thinking, Surprised, Confused, Explaining, Talking, Sleeping).
+  - [x] Technical requirements for 8 animation states and motion curves.
+  - [x] Layered rig breakdown (Body, Head, Eyes, Eyelids, Mouth, Arms, FX) and justification over flat PNGs.
+  - [x] Asset directory architecture and manifest schema.
+  - [x] Third-party copyright protection guidelines.
+- [ ] **Step 2: Content Script & Shadow DOM Container Mount**:
+  - [ ] Implement WXT content script entrypoint.
+  - [ ] Mount `<div id="webmate-root">` with an encapsulated Shadow DOM tree (`attachShadow({ mode: 'open' })`).
+  - [ ] Inject scoped Tailwind CSS styles into the shadow root without host page leaking.
+  - [ ] Establish two-way messaging between Content Script and Background Service Worker.
+- [ ] **Step 3: Floating Container & Positioning State**:
+  - [ ] Implement Zustand extension state store (visibility, active tab, dock position).
+  - [ ] Build baseline draggable floating container component with edge snapping.
 
 *Exit Gate*: Clean, unstyled container rendered inside Shadow DOM on test pages with zero style collision.
 
@@ -68,8 +78,9 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 ### Phase 2: Character UI & Animation Engine (Planned)
 **Goal**: Render a layered vector character with dynamic state transitions and dragging/docking physics.
 
-- [ ] Create open-source layered SVG character rig (Head, Eyes, Eyebrows, Mouth, Body).
-- [ ] Implement CSS keyframe and GSAP animation controller for character states (`idle`, `thinking`, `talking`, `pointing`, `happy`).
+- [ ] Create layered SVG character rig component (`CharacterRig.tsx`).
+- [ ] Implement CSS keyframe and GSAP animation controller for character states (`idle`, `thinking`, `talking`, `pointing`, `happy`, `sleeping`).
+- [ ] Implement token-stream viseme lip-sync driver for real-time speech.
 - [ ] Add draggable container physics with viewport edge snapping and docking.
 - [ ] Implement collapse/minimize states with smooth spring transitions.
 - [ ] Provide character asset customization interface for local asset substitution.

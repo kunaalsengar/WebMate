@@ -1,6 +1,6 @@
 # WebMate — System Architecture
 
-This document describes the architectural design of WebMate, covering the Chrome extension client, backend gateway, Shadow DOM isolation model, inter-process communication (IPC), and security perimeters.
+This document describes the architectural design of WebMate, covering the Chrome extension client, the articulated character animation subsystem, backend gateway, Shadow DOM isolation model, inter-process communication (IPC), and security perimeters.
 
 ---
 
@@ -117,7 +117,56 @@ Injecting custom UI into arbitrary third-party websites presents significant sty
 
 ---
 
-## 4. Backend Gateway Architecture (`@webmate/backend`)
+## 4. Character Animation Subsystem (Planned Architecture)
+
+> [!NOTE]
+> **Implementation Status**: The articulated character rig, animation controller, dynamic pointing system, and mouth animation driver described below represent the **planned architectural design** scheduled for implementation in Phase 2. No character renderer or animation engine currently exists in the codebase.
+
+In the planned Phase 2 implementation, the character companion will be rendered as an articulated, multi-layer vector rig rather than a static raster image. This architectural design enables independent limb movement, dynamic 360° pointing to arbitrary DOM elements, and text-stream-triggered mouth animation paced to incoming AI text tokens.
+
+```mermaid
+flowchart LR
+    subgraph StateManagement["Zustand Store"]
+        CS[characterState: idle | thinking | talking | pointing | ...]
+        CE[characterExpression: normal | happy | confused | ...]
+        TP[targetPointer: x, y coordinates]
+    end
+
+    subgraph Controller["Animation Controller (Planned)"]
+        AC[GSAP Timeline Engine + CSS Keyframes]
+        MD[Mouth Animation Driver / Token Stream Consumer]
+    end
+
+    subgraph Rig["Shadow DOM CharacterRig (Planned)"]
+        L6[Layer 6: FX Overlays]
+        L5[Layer 5: Face & Mouth Layers]
+        L4[Layer 4: Head & Hair]
+        L3[Layer 3: Articulated Pointing Arm]
+        L2[Layer 2: Torso & Legs]
+        L1[Layer 1: Support Arm]
+        L0[Layer 0: Ground Shadow]
+    end
+
+    CS --> AC
+    CE --> AC
+    TP --> AC
+    MD -->|Mouth Shape| L5
+    AC -->|Rotations & Offsets| L3
+    AC -->|Tilt & Nod| L4
+    AC -->|Bob & Squash| L2
+    AC -->|Scale| L0
+    AC -->|Particles| L6
+```
+
+### Planned Component Architecture:
+- **`CharacterContainer`** *(Planned)*: Will handle viewport positioning, dragging physics, edge snapping, and docking states.
+- **`AnimationController`** *(Planned)*: Will subscribe to the extension Zustand store and orchestrate GSAP transitions between states (`idle`, `thinking`, `explaining`, etc.).
+- **`CharacterRig`** *(Planned)*: Will assemble the hierarchical SVG groups (`#layer-shadow`, `#layer-body`, `#layer-head`, `#layer-features`) with rotational pivots.
+- **`MouthAnimationDriver`** *(Planned)*: Will alternate mouth shapes (`mouth-closed`, `mouth-half`, `mouth-open`) keyed directly to incoming SSE text tokens from `@webmate/backend` to provide visual speaking pacing without re-rendering the full character rig. Note: True phoneme-level lip-sync is outside current scope and would require an audio/speech alignment engine.
+
+---
+
+## 5. Backend Gateway Architecture (`@webmate/backend`)
 
 The backend is a Node.js microservice built with **Fastify**:
 
@@ -146,7 +195,7 @@ sequenceDiagram
 
 ---
 
-## 5. Security & Isolation Boundaries
+## 6. Security & Isolation Boundaries
 
 | Boundary | Enforcement Mechanism |
 | :--- | :--- |
