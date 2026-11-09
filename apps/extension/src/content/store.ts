@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import type { CompanionPosition, DockSide } from '@webmate/shared';
+import type {
+  CharacterAnimationState,
+  CharacterExpression,
+  CompanionPosition,
+  DockSide,
+} from '@webmate/shared';
 import { calculateDefaultPosition } from './docking';
 
 /**
@@ -16,6 +21,12 @@ export interface CompanionState {
   isInitialized: boolean;
   /** Active UI tab (baseline for future chat/info panels) */
   activeTab: string;
+  /** Active character expression preset */
+  characterExpression: CharacterExpression;
+  /** Active character animation behavioral state */
+  characterAnimationState: CharacterAnimationState;
+  /** Toggle for development wireframe preview of character anchors and slots */
+  showDevRig: boolean;
 
   /** Action to update complete position and dockSide */
   setPosition: (position: CompanionPosition) => void;
@@ -29,6 +40,12 @@ export interface CompanionState {
   setIsVisible: (isVisible: boolean) => void;
   /** Action to change active tab */
   setActiveTab: (tab: string) => void;
+  /** Action to change character expression */
+  setCharacterExpression: (expression: CharacterExpression) => void;
+  /** Action to change character animation state */
+  setCharacterAnimationState: (state: CharacterAnimationState) => void;
+  /** Action to toggle developer rig wireframe mode */
+  setShowDevRig: (show: boolean) => void;
   /** Action to set initialized position from storage or defaults */
   initializePosition: (position: CompanionPosition) => void;
   /** Action to reset position to default bottom-right */
@@ -36,7 +53,7 @@ export interface CompanionState {
 }
 
 /**
- * Zustand store managing the companion's positioning, docking state, and visibility.
+ * Zustand store managing the companion's positioning, docking state, and character rig.
  */
 export const useCompanionStore = create<CompanionState>((set) => ({
   position: { x: 0, y: 0, dockSide: 'right' },
@@ -44,6 +61,9 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   isVisible: true,
   isInitialized: false,
   activeTab: 'chat',
+  characterExpression: 'normal',
+  characterAnimationState: 'idle',
+  showDevRig: false,
 
   setPosition: (position) => set({ position }),
   setCoordinates: ({ x, y }) =>
@@ -53,6 +73,9 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   setIsDragging: (isDragging) => set({ isDragging }),
   setIsVisible: (isVisible) => set({ isVisible }),
   setActiveTab: (activeTab) => set({ activeTab }),
+  setCharacterExpression: (characterExpression) => set({ characterExpression }),
+  setCharacterAnimationState: (characterAnimationState) => set({ characterAnimationState }),
+  setShowDevRig: (showDevRig) => set({ showDevRig }),
   initializePosition: (position) =>
     set({ position, isInitialized: true }),
   resetPosition: (viewportWidth, viewportHeight) =>
@@ -61,4 +84,3 @@ export const useCompanionStore = create<CompanionState>((set) => ({
       isInitialized: true,
     }),
 }));
-

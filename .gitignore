@@ -47,7 +47,7 @@ tmp/
 temp/
 
 # Copyrighted / Third-Party Raw Character Assets
-# Do not commit proprietary character artwork (e.g. Shinchan source assets) without distribution rights
+# Do not commit proprietary third-party character artwork without distribution rights
 assets/copyrighted/
 *.psd
 *.ai

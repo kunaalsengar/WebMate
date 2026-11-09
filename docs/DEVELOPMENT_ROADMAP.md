@@ -12,11 +12,11 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 └───────────┬────────────┘
             │
 ┌───────────▼────────────┐
-│ Phase 1: Core Ext & DOM│ ◄─── IN PROGRESS (Step 1 Completed)
+│ Phase 1: Core Ext & DOM│ ◄─── COMPLETED
 └───────────┬────────────┘
             │
 ┌───────────▼────────────┐
-│ Phase 2: Character UI  │
+│ Phase 2: Character UI  │ ◄─── IN PROGRESS
 └───────────┬────────────┘
             │
 ┌───────────▼────────────┐
@@ -52,11 +52,11 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 
 ---
 
-### Phase 1: Extension Core & Shadow DOM Scaffold (In Progress)
+### Phase 1: Extension Core & Shadow DOM Scaffold (Completed)
 **Goal**: Establish the character asset architecture, in-page injection mechanism, and Shadow DOM runtime container.
 
 - [x] **Step 1: Character Asset Architecture**:
-  - [x] Technical architecture for integrating the Shinchan visual persona.
+  - [x] Technical architecture for integrating the WebMate mascot visual persona.
   - [x] Specifications for 8 expressions (Normal, Happy, Thinking, Surprised, Confused, Explaining, Talking, Sleeping).
   - [x] Technical requirements for 8 animation states and motion curves.
   - [x] Layered rig breakdown (Body, Head, Eyes, Eyelids, Mouth, Arms, FX) and justification over flat PNGs.
@@ -82,17 +82,33 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
 
 ---
 
-### Phase 2: Character UI & Animation Engine (Planned)
+### Phase 2: Character UI & Animation Engine (In Progress)
 **Goal**: Render a layered vector character with dynamic state transitions and dragging/docking physics.
 
-- [ ] Create layered SVG character rig component (`CharacterRig.tsx`).
-- [ ] Implement CSS keyframe and GSAP animation controller for character states (`idle`, `thinking`, `talking`, `pointing`, `happy`, `sleeping`).
-- [ ] Implement token-stream viseme lip-sync driver for real-time speech.
-- [ ] Add draggable container physics with viewport edge snapping and docking.
-- [ ] Implement collapse/minimize states with smooth spring transitions.
-- [ ] Provide character asset customization interface for local asset substitution.
+- [x] **Step 1A: Character Rig Foundation (Asset-Independent)** (Completed):
+  - [x] Implement transparent vector rig container (`CharacterRig.tsx`) with stable 200x250 viewBox.
+  - [x] Implement independent layer renderers in `CharacterLayers.tsx` (head, body, left/right arms, left/right legs, eyes, eyebrows, mouth, fx).
+  - [x] Implement typed asset contracts and manifest configuration for 12 rig slots.
+  - [x] Configure 8 canonical expressions (normal, happy, thinking, surprised, confused, explaining, talking, sleeping).
+  - [x] Handle missing assets safely with transparent fallback and zero runtime crashes.
+  - [x] Provide developer-only wireframe preview mode (`showDevRig`) for pivot anchor calibration.
+  - [x] Establish asset directory structure with strict licensing and ingestion guidelines.
+  - [x] Synchronize composite dimensions (`232×231px`: 130×163px CharacterRig at scale 0.65 stacked above 232×68px card) across `@webmate/shared`, `docking.ts`, and React components with explicit small-viewport boundary clamping (`x=0`, `y=0` when constrained) and 20px edge docking margins.
+- [x] **Step 1B: GSAP Animation Controller & Motion Timelines** (Completed):
+  - [x] Implement modular animation architecture under `apps/extension/src/character/animation/` (controller, definitions, lifecycle, types, motionUtils).
+  - [x] Implement GSAP procedural timelines for all 8 character states (`idle`, `blinking`, `waving`, `thinking`, `explaining`, `talking`, `happy`, `sleeping`).
+  - [x] Implement event-driven text-stream mouth animation driver interface (`TalkingAnimationDriver`).
+  - [x] Implement `AnimationLifecycleManager` with GSAP context scoping, transition interruption, duplicate timeline suppression, and clean unmount teardown.
+  - [x] Integrate `useCharacterAnimation` with `CharacterRig` and `FloatingCompanion`, adding drag pause/resume optimization and `prefers-reduced-motion` support.
+  - [x] Integrate 100% original 12-layer mascot vector artwork package (`palette.ts`, `registry.tsx`, `ShadowArtwork` through `EffectsArtwork`).
+  - [x] Validate production build successfully with clean JSX registry compilation.
+  - [x] Pass all four manual motion checks: waving, thinking, automatic organic blinking, and reduced-motion behavior.
+  - [x] Disable developer wireframe guides by default (`showDevRig: false`) while preserving debugging diagnostics.
+- [ ] **Step 2: Interactive Gestures & Dynamic Pointing**:
+  - [ ] Implement 360-degree dynamic pointing to arbitrary DOM elements.
+  - [ ] Provide character asset customization interface for local asset substitution.
 
-*Exit Gate*: 60 FPS animation loop in docked and floating states with responsive drag-and-drop.
+*Exit Gate*: Fully articulated vector rig integrated with GSAP animation loop in docked and floating states.
 
 ---
 

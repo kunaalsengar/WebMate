@@ -9,7 +9,7 @@
  */
 
 /**
- * Facial expressions for the Shinchan companion rig.
+ * Facial expressions for the WebMate companion rig.
  *
  * NOTE: 'talking' (stream-triggered mouth oscillation) and 'sleeping' (slumped
  * posture with snot bubble and Zzz FX) are behavioral/display states rather
@@ -81,6 +81,23 @@ export interface CharacterAnchorCoordinates {
 }
 
 /**
+ * Canonical layer IDs for the 12-slot articulated WebMate vector rig.
+ */
+export type CharacterLayerId =
+  | 'layer-shadow'
+  | 'layer-leg-left'
+  | 'layer-leg-right'
+  | 'layer-body'
+  | 'layer-arm-left'
+  | 'layer-arm-right'
+  | 'layer-head'
+  | 'layer-blush'
+  | 'layer-eyebrows'
+  | 'layer-eyes'
+  | 'layer-mouth'
+  | 'layer-fx';
+
+/**
  * Metadata definition for an articulated vector rig layer.
  */
 export interface CharacterLayerDefinition {
@@ -101,6 +118,67 @@ export interface CharacterManifest {
   viewBox: string;
   anchors: Record<string, CharacterAnchorCoordinates>;
   layers: CharacterLayerDefinition[];
+}
+
+/**
+ * Configuration schema for an individual facial expression preset.
+ */
+export interface CharacterExpressionConfig {
+  id: CharacterExpression;
+  label: string;
+  eyebrowsVariant: string;
+  eyesVariant: string;
+  mouthVariant: string;
+  blushOpacity: number;
+  fxVariant: string | null;
+  headTiltDeg: number;
+  description: string;
+}
+
+/**
+ * Character rig base dimensions (conforming to character.manifest.json viewBox "0 0 200 250").
+ */
+export const CHARACTER_BASE_WIDTH = 200;
+export const CHARACTER_BASE_HEIGHT = 250;
+
+/**
+ * Standard scale factor for the CharacterRig in the floating companion.
+ */
+export const CHARACTER_RIG_SCALE = 0.65;
+
+/**
+ * Rendered dimensions for the scaled CharacterRig (130×163 px).
+ */
+export const CHARACTER_RENDERED_WIDTH = Math.round(CHARACTER_BASE_WIDTH * CHARACTER_RIG_SCALE); // 130
+export const CHARACTER_RENDERED_HEIGHT = Math.round(CHARACTER_BASE_HEIGHT * CHARACTER_RIG_SCALE); // 163
+
+/**
+ * Pixel dimensions for the companion card badge (conforming to CompanionPlaceholder).
+ */
+export const COMPANION_CARD_WIDTH = 232;
+export const COMPANION_CARD_HEIGHT = 68;
+
+/**
+ * Composite pixel dimensions of the entire floating companion component
+ * (130×163px CharacterRig stacked vertically directly above 232×68px CompanionCard = 232×231px).
+ */
+export const COMPOSITE_COMPANION_WIDTH = Math.max(CHARACTER_RENDERED_WIDTH, COMPANION_CARD_WIDTH); // 232
+export const COMPOSITE_COMPANION_HEIGHT = CHARACTER_RENDERED_HEIGHT + COMPANION_CARD_HEIGHT; // 231
+
+/**
+ * Canonical companion dimensions for positioning, clamping, and edge docking calculations.
+ */
+export const COMPANION_WIDTH = COMPOSITE_COMPANION_WIDTH;
+export const COMPANION_HEIGHT = COMPOSITE_COMPANION_HEIGHT;
+
+/**
+ * Runtime configuration contract for the CharacterRig component.
+ */
+export interface CharacterRigConfig {
+  expression: CharacterExpression;
+  animationState: CharacterAnimationState;
+  scale: number;
+  showDevRig?: boolean;
 }
 
 /**

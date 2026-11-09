@@ -1,18 +1,18 @@
 # WebMate — Character Asset Architecture (Phase 1, Step 1)
 
-This document establishes the comprehensive technical architecture for integrating the **Crayon Shin-chan** (Shinnosuke Nohara) character as the interactive floating browser companion in WebMate.
+This document establishes the comprehensive technical architecture for integrating the **WebMate Original Mascot** character as the interactive floating browser companion in WebMate.
 
 ---
 
 ## 1. Executive Summary & Character Identification
 
-WebMate's floating companion is purposefully designed to capture the recognizable visual identity, charm, and comedic expressiveness of **Shinchan**:
-- **Distinctive Silhouette**: The iconic potato-shaped head contour with soft, chubby cheeks protruding forward.
-- **Signature Facial Features**: Bold, thick black arched eyebrows capable of extreme exaggeration, wide expressive eyes, and playful mouth shapes.
-- **Canonical Attire**: Bright red short-sleeved crew-neck t-shirt, yellow shorts, white socks, and cyan/teal shoes.
+WebMate's floating companion is designed as a completely original cartoon boy mascot embodying charm, playful curiosity, and comedic expressiveness:
+- **Distinctive Silhouette & Hairstyle**: Rounded chibi head contour with cute side-swept dark hair featuring subtle specular sheen.
+- **Expressive Facial Features**: Thick, expressive cartoon eyebrows capable of dynamic articulation, large anime eyes with dual specular catchlights, cute button nose, and versatile mouth geometries.
+- **Original Attire**: Red-orange short-sleeved crew-neck t-shirt with a gold-and-white chest lightning emblem, warm mustard yellow shorts, white athletic socks, and cyan/teal speed-striped sneakers.
 - **Personality in Motion**: Curious, cheeky, confident, and humorous reactions that demystify web pages and reduce user intimidation when navigating dense digital content.
 
-To bring this character to life within a web browser without lagging host pages, the architecture requires an articulated, multi-layered vector rig rather than static images or pre-rendered videos.
+To bring this original mascot to life within a web browser without lagging host pages, the architecture employs an articulated, multi-layered vector rig rather than static images or pre-rendered videos.
 
 ---
 
@@ -236,7 +236,7 @@ apps/extension/
 
 ```json
 {
-  "name": "shinchan-standard",
+  "name": "webmate-mascot-standard",
   "version": "1.0.0",
   "viewBox": "0 0 200 250",
   "anchors": {
@@ -266,17 +266,18 @@ apps/extension/
 
 ---
 
-## 6. Copyright and Licensing Enforcement Protocol
+## 6. Intellectual Property, Artwork Ownership & Licensing Architecture
 
-1. **Third-Party Rights Ownership**:
-   - The visual character "Crayon Shin-chan" / "Shinnosuke Nohara" is created by **Yoshito Usui** and owned by **Futabasha Publishers Ltd.**, **Shin-ei Animation Co., Ltd.**, and **TV Asahi Corporation**.
-2. **Public Repository Hygiene**:
-   - Official animation cells, DVD rips, copyrighted artwork, trademarked logos, or commercial sprite sheets must **never** be checked into this Git repository.
-   - The `.gitignore` file enforces exclusion of raw artwork (`assets/copyrighted/`, `*.psd`, `*.ai`).
-3. **Decoupled Asset Delivery**:
-   - The core software engine (WebMate) is licensed under the Apache License, Version 2.0.
-   - The open-source code operates against an abstract layer contract (`CharacterManifest`).
-   - Users or developers wishing to view the exact character can supply their own local vector layers adhering to the manifest specification without violating distribution laws.
+WebMate enforces a strict separation between open-source code infrastructure and original mascot artwork:
+
+1. **Software Engine Licensing (Apache-2.0)**:
+   - The core WebMate extension engine, including the 12-layer SVG character rig architecture (`CharacterRig.tsx`), layer renderers (`CharacterLayers.tsx`), docking physics, Chrome storage persistence, Shadow DOM mounting, and GSAP procedural animation pipelines (`apps/extension/src/character/animation/`), is licensed under the permissive **Apache License, Version 2.0**.
+2. **WebMate Original Mascot Artwork**:
+   - The companion mascot is a **100% original creative work** created specifically for WebMate. All vector geometries, palettes (`apps/extension/src/character/artwork/palette.ts`), layer components (`ShadowArtwork` through `EffectsArtwork`), and character designs represent original proprietary WebMate artwork.
+3. **Third-Party Intellectual Property Disclaimer**:
+   - WebMate is an independent project. The mascot is **NOT** Crayon Shin-chan (Shinnosuke Nohara) and does not utilize, reproduce, or distribute copyrighted artwork, character likenesses, broadcast frames, or trademarks owned by Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation Co., Ltd., or TV Asahi Corporation.
+4. **Decoupled Asset Architecture**:
+   - The character rig operates against an abstract, typed layer contract (`CharacterManifest` and `CharacterAssetRegistry`). Third-party copyrighted assets must **never** be checked into this Git repository. Users or developers wishing to inject custom local artwork may do so via the documented ingestion interface.
 
 ---
 

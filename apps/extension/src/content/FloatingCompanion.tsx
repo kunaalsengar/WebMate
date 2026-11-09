@@ -1,5 +1,9 @@
 import React, { useRef } from 'react';
+import { CharacterRig } from '../character/CharacterRig';
+import { characterArtworkRegistry } from '../character/artwork';
 import { CompanionPlaceholder } from './CompanionPlaceholder';
+import { CHARACTER_RIG_SCALE } from '@webmate/shared';
+import { useCompanionStore } from './store';
 import { useDraggable } from './useDraggable';
 
 /**
@@ -9,14 +13,14 @@ import { useDraggable } from './useDraggable';
  * - Wraps the companion in a GPU-accelerated fixed container with translate3d positioning.
  * - Handles pointer-based dragging across mouse, touch, and pen devices.
  * - Enforces viewport edge docking snap on pointer release with safe 16-24px margins.
- * - Applies grab / grabbing cursor states.
- * - Disables user selection and page touch-scrolling during drag.
- * - Applies smooth spring transitions when snapping to docked edge and instant response during drag.
- * - Subtly elevates the card while dragging.
+ * - Mounts transparent CharacterRig foundation without any opaque backing card behind the character.
+ * - Preserves existing navy-and-white CompanionPlaceholder card.
+ * - Maintains Shadow DOM isolation, grab/grabbing cursors, and touch/selection safety.
  */
 export const FloatingCompanion: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { position, isDragging, isInitialized, dragProps } = useDraggable();
+  const { characterExpression, characterAnimationState, showDevRig } = useCompanionStore();
 
   return (
     <div
@@ -43,10 +47,21 @@ export const FloatingCompanion: React.FC = () => {
         willChange: isDragging ? 'transform' : 'auto',
       }}
     >
-      <CompanionPlaceholder isDragging={isDragging} />
+      <div className="webmate-companion-composite flex flex-col items-center">
+        {/* Transparent Articulated Mascot Character Rig */}
+        <CharacterRig
+          expression={characterExpression}
+          animationState={characterAnimationState}
+          scale={CHARACTER_RIG_SCALE}
+          showDevRig={showDevRig}
+          isDragging={isDragging}
+          assetRegistry={characterArtworkRegistry}
+        />
+        {/* Existing Navy-and-White Companion Badge */}
+        <CompanionPlaceholder isDragging={isDragging} />
+      </div>
     </div>
   );
 };
 
 export default FloatingCompanion;
-

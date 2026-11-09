@@ -133,6 +133,295 @@ This log tracks day-by-day development milestones, decisions, completed tasks, a
 
 ---
 
+### Session 7: Shinchan Character Rig Foundation (Phase 2, Step 1A)
+- **Focus**: Implement the asset-independent vector character rig foundation accepting future licensed Shinchan artwork while maintaining zero crashes and zero unauthorized artwork.
+- **Accomplishments**:
+  - `packages/shared/src/index.ts`:
+    - Added `CharacterLayerId` for 12 canonical rig slots.
+    - Added `CharacterExpressionConfig` and `CharacterRigConfig` contracts.
+  - `apps/extension/assets/character/manifests/character.manifest.json`:
+    - Added `leftHip` and `rightHip` anchors and `layer-leg-left` / `layer-leg-right` layer definitions.
+  - `apps/extension/src/character/types.ts`:
+    - Defined `LayerRenderProps` and `CharacterAssetRegistry`.
+  - `apps/extension/src/character/expressions.config.ts`:
+    - Implemented full typed configurations for all 8 expressions (normal, happy, thinking, surprised, confused, explaining, talking, sleeping).
+  - `apps/extension/src/character/CharacterLayers.tsx`:
+    - Implemented independent SVG renderers for all 12 slots (shadow, left/right legs, body, left/right arms, head, blush, eyebrows, eyes, mouth, fx).
+    - Designed safe missing asset fallback (renders nothing/transparent in production without crashing) and developer wireframe mode (`showDevRig`) for pivot anchor crosshair inspection.
+  - `apps/extension/src/character/CharacterRig.tsx`:
+    - Built transparent SVG rig container adhering to viewBox `0 0 200 250` with configurable scale, expression, and animationState props.
+  - `apps/extension/src/content/store.ts`:
+    - Added `characterExpression`, `characterAnimationState`, and `showDevRig` state to `useCompanionStore`.
+  - `apps/extension/src/content/FloatingCompanion.tsx`:
+    - Integrated transparent `CharacterRig` above the navy-and-white card, preserving dragging, docking, position persistence, and Shadow DOM isolation.
+  - `apps/extension/assets/character/`:
+    - Created complete asset directory structure (`layers/`, `expressions/`, `ingestion/`) with strict licensing guidelines and slot specifications.
+  - Documentation Updates:
+    - Updated `docs/CHARACTER_ASSETS.md`, `docs/DEVELOPMENT_ROADMAP.md`, and `docs/DAILY_PROGRESS.md`.
+
+---
+
+### Session 8: Fix Floating Companion Geometry After Character Rig Integration (Phase 2, Step 1A Correction)
+- **Focus**: Synchronize floating companion viewport clamping, default positioning, edge docking, and responsive vertical restoration with the full composite component geometry (130×163px CharacterRig stacked above 232×68px card = 232×231px total).
+- **Accomplishments**:
+  - `packages/shared/src/index.ts`:
+    - Established the single source of truth for character base dimensions (200×250), standard scale (`0.65`), rendered dimensions (`130×163px`), card dimensions (`232×68px`), and composite component dimensions (`232×231px`).
+  - `apps/extension/src/content/docking.ts`:
+    - Updated `COMPANION_WIDTH` (`232px`) and `COMPANION_HEIGHT` (`231px`) to reference the composite constants.
+    - Updated `calculateDefaultPosition()`, `clampToViewport()`, `calculateDockPosition()`, `recalculateDockedPosition()`, `calculateRelativeY()`, and `calculatePositionFromRelativeY()` to bound the complete composite within viewport boundaries.
+  - `apps/extension/src/character/CharacterRig.tsx`:
+    - Synchronized default scale prop and rendered dimension calculations with `CHARACTER_RIG_SCALE`, `CHARACTER_BASE_WIDTH`, and `CHARACTER_BASE_HEIGHT`.
+  - `apps/extension/src/content/FloatingCompanion.tsx`:
+    - Synchronized `<CharacterRig />` scale with `CHARACTER_RIG_SCALE` imported from `docking.ts`.
+  - `docs/DEVELOPMENT_ROADMAP.md`:
+    - Updated Phase 2 Step 1A checklist and retained "Pending Manual Verification" per requirements.
+
+---
+
+### Session 9: Phase 2 Step 1A Final Geometry Correction & Small Viewport Safety
+- **Focus**: Finalize shared geometry constants in `@webmate/shared`, import directly across all consumer components, and implement strict small-viewport handling in `docking.ts`.
+- **Accomplishments**:
+  - `packages/shared/src/index.ts`:
+    - Exported all 11 geometry constants including `COMPANION_WIDTH` and `COMPANION_HEIGHT` as direct aliases of composite dimensions (`232×231px`).
+  - `apps/extension/src/content/docking.ts`:
+    - Directly imported `COMPANION_WIDTH` and `COMPANION_HEIGHT` from `@webmate/shared`.
+    - Added small-viewport boundary clamping: snaps `x = 0` when `viewportWidth < COMPANION_WIDTH` and `y = 0` when `viewportHeight < COMPANION_HEIGHT`.
+    - Enforced non-negative coordinates across all docking and clamping functions while preserving 20px screen margins when space permits.
+  - `apps/extension/src/character/CharacterRig.tsx`:
+    - Imported `CHARACTER_RENDERED_WIDTH` and `CHARACTER_RENDERED_HEIGHT` from `@webmate/shared` for default dimension calculations while preserving explicit overrides.
+  - `apps/extension/src/content/FloatingCompanion.tsx`:
+    - Directly imported `CHARACTER_RIG_SCALE` from `@webmate/shared`.
+  - `apps/extension/src/content/CompanionPlaceholder.tsx`:
+    - Directly imported `COMPANION_CARD_WIDTH` and `COMPANION_CARD_HEIGHT` from `@webmate/shared` instead of hardcoded pixel strings.
+  - Documentation:
+    - Updated `docs/CHARACTER_ASSETS.md`, `docs/DEVELOPMENT_ROADMAP.md`, and `docs/DAILY_PROGRESS.md`. Step 1A retained as Pending Manual Verification.
+
+---
+
+### Session 10: Phase 2 Step 1A Intermediate Viewport Position Persistence Fix
+- **Focus**: Correct `calculateRelativeY()` in `docking.ts` to preserve relative vertical position across intermediate viewport heights where the companion physically fits but margins cannot be maintained.
+- **Accomplishments**:
+  - `apps/extension/src/content/docking.ts`:
+    - Updated `calculateRelativeY()`:
+      - Returns `0` if `viewportHeight <= COMPANION_HEIGHT`.
+      - Computes `physicalAvailableHeight = viewportHeight - COMPANION_HEIGHT`.
+      - When `physicalAvailableHeight < 2 * SCREEN_MARGIN`, calculates ratio using `y / physicalAvailableHeight` to preserve intermediate vertical positioning.
+      - When `physicalAvailableHeight >= 2 * SCREEN_MARGIN`, uses standard margin-adjusted calculation `(y - SCREEN_MARGIN) / (physicalAvailableHeight - 2 * SCREEN_MARGIN)`.
+      - Strictly guards against division by zero and clamps ratio between `0` and `1`.
+    - Maintained symmetry with `calculatePositionFromRelativeY()`.
+  - Status: Phase 2 Step 1A remains pending manual verification.
+
+---
+
+### Session 11: Phase 2 Step 1B Character Animation System Foundation
+- **Focus**: Design and implement the modular GSAP procedural animation engine for the Shinchan CharacterRig.
+- **Accomplishments**:
+  - Created modular animation architecture in `apps/extension/src/character/animation/`:
+    - `types.ts`: Defined `CharacterRigLayerElements`, `RigAnchors`, `AnimationBuildContext`, `AnimationTimelineBuilder`, and `TalkingAnimationDriver`.
+    - `motionUtils.ts`: Created `applyLayerAnchorPivots()`, `resetLayerTransforms()`, `resolveRigElements()`, `MOTION_EASINGS`, and `isPrefersReducedMotion()`.
+    - `definitions.ts`: Authored procedural GSAP timelines for all 8 canonical states (`idle`, `blinking`, `waving`, `thinking`, `explaining`, `talking`, `happy`, `sleeping`).
+    - `lifecycle.ts`: Built `AnimationLifecycleManager` handling GSAP context scoping, state transition interruption, duplicate timeline suppression, non-destructive secondary overlays, and clean unmount teardown.
+    - `controller.ts`: Built `CharacterAnimationController` and `useCharacterAnimation` hook coordinating primary state playback, random organic eye blinking intervals (3.5s–6.0s), dragging pause/resume optimization, and speech token mouth pacing.
+    - `index.ts`: Re-exported public API.
+  - Integrated into `CharacterRig.tsx`:
+    - Attached `svgRef` to `<svg>` and wired `useCharacterAnimation`.
+    - Added `isDragging?: boolean` prop to pause/resume motion during user dragging.
+  - Integrated into `FloatingCompanion.tsx`:
+    - Passed `isDragging` from `useDraggable()` to `<CharacterRig isDragging={isDragging} />`.
+  - Updated Documentation:
+    - Updated `docs/CHARACTER_ASSETS.md`, `docs/DEVELOPMENT_ROADMAP.md`, and `docs/DAILY_PROGRESS.md`.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 12: Phase 2 Step 1B Focused Animation Corrections & Persistence Validation
+- **Focus**: Targeted corrections to talking reduced-motion behavior, TalkingAnimationDriver callback exposure, speech tween lifecycle tracking, and Number.isFinite() validation.
+- **Accomplishments**:
+  - `apps/extension/src/character/animation/definitions.ts`:
+    - Updated `buildTalkingTimeline()` to render a static resting mouth pose (`scaleY: 1.0, scaleX: 1.0`) when `isReducedMotion` is true, without executing mouth oscillations.
+  - `apps/extension/src/character/animation/types.ts`:
+    - Added `onTalkingDriverReady?: (driver: TalkingAnimationDriver) => void` to `CharacterAnimationHookOptions`.
+  - `apps/extension/src/character/CharacterRig.tsx`:
+    - Added `onTalkingDriverReady` to `CharacterRigProps` and forwarded it to `useCharacterAnimation`.
+  - `apps/extension/src/character/animation/controller.ts`:
+    - Tracked both `speechPulseTween` and `speechSettleTween`.
+    - Added `killSpeechTweens()` to safely settle mouth transforms on state changes, drag start, and component unmount.
+    - Suppressed speech animations during active dragging (`isDraggingActive`).
+    - Exposed stable `talkingDriver` to parent component via `onTalkingDriverReady`.
+  - `apps/extension/src/content/docking.ts`:
+    - Confirmed `calculateRelativeY()` and `calculatePositionFromRelativeY()` symmetry using `Number.isFinite()`.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 13: Phase 2 Step 1B Final Talking Animation Correction
+- **Focus**: Eliminate competing mouth animations between primary timeline and speech driver, and complete the TalkingAnimationDriver lifecycle.
+- **Accomplishments**:
+  - `apps/extension/src/character/animation/definitions.ts`:
+    - Removed continuous mouth scale loop from `buildTalkingTimeline()`; mouth is initialized to neutral resting pose (`scaleY: 1.0, scaleX: 1.0`), freeing it for exclusive control by the speech driver.
+    - Preserved conversational head nods and eyebrow inflection rhythm in non-reduced motion mode.
+  - `apps/extension/src/character/animation/controller.ts`:
+    - Updated `pushSpeechToken()` to trigger pulses strictly when `isSpeakingActive` is true and `isDraggingActive` is false.
+    - Updated `startSpeaking()` to activate speaking lifecycle and kill previous tweens.
+    - Updated `stopSpeaking()` to deactivate speaking lifecycle, kill active pulses, and safely settle mouth to neutral.
+    - Ensured state transitions away from talking deactivate `isSpeakingActive` and settle mouth to neutral.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 14: Phase 2 Step 1B Final Animation Source Corrections
+- **Focus**: Eliminate remaining talking mouth timeline tween conflict, correct reduced-motion behavior in thinking/explaining, fix GSAP type import, and update TalkingAnimationDriver documentation.
+- **Accomplishments**:
+  - `apps/extension/src/character/animation/definitions.ts`:
+    - Removed mouth neutral-position tween from `buildTalkingTimeline()`; initialized mouth once via `gsap.set()` outside the timeline so speech driver has sole ownership of mouth scale.
+    - Updated `buildThinkingTimeline()` and `buildExplainingTimeline()` under `isReducedMotion === true` to avoid non-essential head/arm/body/eyebrow movement and return static timelines.
+  - `apps/extension/src/character/animation/types.ts`:
+    - Explicitly imported GSAP type via `import type { gsap } from 'gsap';` for valid `gsap.core.Timeline` declaration.
+    - Updated `TalkingAnimationDriver` documentation to accurately describe event-driven mouth pulses and speaking lifecycle without referencing continuous oscillation or true audio lip-sync.
+  - `apps/extension/src/character/animation/controller.ts`:
+    - Synchronized JSDoc comments on `TalkingAnimationDriver` methods.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 15: Phase 2 Step 1B Final Reduced-Motion Consistency Fix
+- **Focus**: Enforce strict reduced-motion consistency across the character animation controller and animation definitions.
+- **Accomplishments**:
+  - `apps/extension/src/character/animation/controller.ts`:
+    - Tracked `isReducedMotion` within `CharacterAnimationController` synchronized from `AnimationBuildContext`.
+    - In `TalkingAnimationDriver.pushSpeechToken()`: Ensured early-return with mouth set to neutral resting pose (`scaleY: 1.0, scaleX: 1.0`) when `isReducedMotion || isPrefersReducedMotion()`.
+    - In `TalkingAnimationDriver.startSpeaking()`: Guaranteed mouth remains in neutral resting pose when reduced motion is active.
+    - In `TalkingAnimationDriver.stopSpeaking()`: Immediately snapped mouth to neutral resting pose via `gsap.set()` without tweening when reduced motion is active.
+    - Reset `this.isReducedMotion = false` during `cleanup()`.
+  - `apps/extension/src/character/animation/definitions.ts`:
+    - Updated `buildWavingTimeline()`: Returns a static timeline when `isReducedMotion === true`, eliminating non-essential arm movement and lateral wave.
+    - Updated `buildHappyTimeline()`: Returns a static timeline when `isReducedMotion === true`, eliminating non-essential hop, body bounce, and arm celebration swings.
+  - Preservation:
+    - Normal-motion animations remain completely unaffected.
+    - Character geometry (232×231 px composite), rig dimensions, layer IDs, docking, dragging, storage persistence, and Shadow DOM isolation remain intact.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 16: Phase 2 Step 1B Character Rig Developer Preview
+- **Focus**: Enable temporary developer wireframe preview for the CharacterRig, exposing all 12 layer guides, labels, anchor points, and bounding guides while preserving animation articulation.
+- **Accomplishments**:
+  - `apps/extension/src/content/store.ts`:
+    - Set `showDevRig: true` in default store initialization, activating developer wireframe preview.
+  - `apps/extension/src/character/CharacterLayers.tsx`:
+    - Updated `BlushLayer` to render `DevAnchorGuide` when `showDevRig` is true regardless of `blushOpacity: 0.0`, positioning the guide at the left cheek `(78, 102)` and ensuring visible opacity (`0.85`).
+    - Updated `EyebrowsLayer` to use readable indigo `#818CF8` color and positioned guide at manifest eyebrows coordinate `(105, 75)`.
+    - Updated `EyesLayer` to use readable sky blue `#38BDF8` color and positioned guide at eye line `(100, 88)`.
+    - Updated `EffectsLayer` guide to offset above head at `(125, 55)`.
+    - Resolved label overlapping between head, blush, eyebrows, eyes, and fx; all 12 layers now possess distinct, non-overlapping coordinates and visible labels.
+  - `apps/extension/src/character/CharacterRig.tsx`:
+    - Enhanced dev grid opacity (`0.6`) for distinct 200×250 bounding guide visibility across varied backgrounds.
+  - Preservation:
+    - Retained all layer IDs, SVG dimensions (200×250 viewBox, 0.65 scale), composite geometry (232×231 px), dragging, docking, storage persistence, and Shadow DOM isolation.
+    - Zero fake Shinchan artwork or generic cartoons created.
+    - Easily reversible at any time by setting `showDevRig: false` in `store.ts` without modifying the rig.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 17: Phase 2 Step 1B Original Mascot Artwork Creation & 12-Layer SVG Integration
+- **Focus**: Design and implement a completely original, premium-quality 2D cartoon boy mascot and integrate it into WebMate's existing 12-layer SVG character rig architecture.
+- **Accomplishments**:
+  - Authored original vector artwork package under `apps/extension/src/character/artwork/`:
+    - `palette.ts`: Defined visual design system tokens (skin tones, red-orange top `#FF5722`, mustard yellow shorts `#F59E0B`, cyan sneakers `#06B6D4`, stroke weights).
+    - `ShadowArtwork.tsx` (`layer-shadow`): Soft outer and inner core ground contact shadow ellipse around `(100, 240)`.
+    - `LegLeftArtwork.tsx` (`layer-leg-left`): Background left leg, white sock, and cyan sneaker articulating from `leftHip` `(88, 200)`.
+    - `ArmLeftArtwork.tsx` (`layer-arm-left`): Background left arm, red-orange sleeve cuff, and stylized hand articulating from `leftShoulder` `(70, 135)`.
+    - `LegRightArtwork.tsx` (`layer-leg-right`): Foreground right leg, white sock, and cyan sneaker articulating from `rightHip` `(112, 200)`.
+    - `BodyArtwork.tsx` (`layer-body`): Torso with red-orange crewneck t-shirt, chest lightning emblem, and mustard yellow shorts articulating from `torso` `(100, 170)`.
+    - `ArmRightArtwork.tsx` (`layer-arm-right`): Articulated foreground right arm for waving, pointing, and thinking articulating from `rightShoulder` `(130, 135)`.
+    - `HeadArtwork.tsx` (`layer-head`): Anime chibi face contour, neck with under-chin shadow, ears with inner helix detailing, button nose, and side-swept messy dark hair articulating from `head` `(100, 115)`.
+    - `BlushArtwork.tsx` (`layer-blush`): Rosy coral-pink cheek glow ellipses with anime diagonal accent strokes.
+    - `EyebrowsArtwork.tsx` (`layer-eyebrows`): Two thick cartoon eyebrows responding to all 8 expressions (relaxed, joyful arches, furrowed/contemplative, high surprise, asymmetric confused, focused explaining, and sleepy droop).
+    - `EyesArtwork.tsx` (`layer-eyes`): Large expressive eyes with white sclera, pupils, catchlights, smiling crescents (`^ ^`), glancing pupils, shock dots, and sleepy eye slits (`- -`) with procedural GSAP blink squash.
+    - `MouthArtwork.tsx` (`layer-mouth`): Expression-responsive mouth geometries (playful smirk, open grin with teeth and tongue, pursed thoughtful, vertical surprise "O", and articulate speaking mouth) supporting `TalkingAnimationDriver` organic token scaling around `(105, 105)`.
+    - `EffectsArtwork.tsx` (`layer-fx`): Emotional FX overlays (sparkle stars for happy, indigo question mark for thinking, temple sweat drops for surprised/confused, and drifting "Zzz" letters with snot bubble for sleeping).
+    - `registry.tsx`: `characterArtworkRegistry` mapping all 12 layer IDs to their respective artwork components and dynamic renderers.
+    - `index.ts`: Re-exported artwork public API.
+  - Integration:
+    - Updated `CharacterAssetRegistry` in `types.ts` to support both direct `React.ReactNode` and dynamic render functions `(props: LayerRenderProps) => React.ReactNode`.
+    - Updated `CharacterLayers.tsx` so `customContent` and `showDevRig` guides can be rendered simultaneously for alignment inspection during development preview.
+    - Updated `CharacterRig.tsx` to default `assetRegistry = characterArtworkRegistry` and resolve dynamic layer functions.
+    - Updated `FloatingCompanion.tsx` to explicitly pass `assetRegistry={characterArtworkRegistry}`.
+  - Preservation:
+    - ViewBox `0 0 200 250`, `0.65` scale factor, and `232 × 231 px` composite geometry preserved.
+    - All 12 layer IDs and manifest anchor coordinates preserved.
+    - Viewport clamping, docking, dragging, storage persistence, and Shadow DOM isolation preserved.
+    - 100% original mascot design adhering strictly to zero-copyright IP compliance.
+  - Status: Phase 2 Step 1B remains pending manual verification.
+
+---
+
+### Session 18: Phase 2 Step 1B Fix JSX Artwork Registry File Extension
+- **Focus**: Resolve JSX compilation error in production builds by renaming `registry.ts` to `registry.tsx`.
+- **Accomplishments**:
+  - `apps/extension/src/character/artwork/registry.tsx`:
+    - Renamed from `registry.ts` to `registry.tsx` to properly support JSX syntax (`<ShadowArtwork />`, etc.).
+    - Deleted obsolete `registry.ts`.
+  - Audited all import paths:
+    - `apps/extension/src/character/artwork/index.ts`: Uses extensionless export `export * from './registry';`, which cleanly resolves `registry.tsx`.
+    - `CharacterRig.tsx` and `FloatingCompanion.tsx`: Import `characterArtworkRegistry` via package barrel roots (`./artwork` and `../character/artwork`), requiring zero path modifications.
+  - Comprehensive Audit of `.ts` files:
+    - Scanned all TypeScript files across `apps/extension/src` and `entrypoints`; confirmed no other `.ts` files contain JSX syntax (all other `<...>` occurrences are standard generic type parameters).
+  - Status: Phase 2 Step 1B completed (build verified, motion checks passed).
+
+---
+
+### Session 19: Phase 2 Step 1B Final Developer Guide Cleanup & Milestone Signoff
+- **Focus**: Disable developer wireframe guides by default for production companion display while preserving diagnostic capabilities, and record Phase 2 Step 1B verification signoff.
+- **Accomplishments**:
+  - `apps/extension/src/content/store.ts`:
+    - Set default `showDevRig: false` in `useCompanionStore` state initialization.
+    - Verified `FloatingCompanion.tsx` and `CharacterRig.tsx` contain zero hardcoded `showDevRig={true}` overrides.
+    - Ensured SVG dev grid (`#dev-grid`), dashed 200×250 bounding guides, anchor target crosshairs, and coordinate labels are hidden by default during normal browsing.
+    - Guaranteed all 12 original vector character mascot artwork layers remain fully visible, articulate cleanly, and render cleanly without visual occlusion.
+  - Preserved Developer Diagnostics:
+    - Retained `setShowDevRig` action in `useCompanionStore` and `DevAnchorGuide` logic in `CharacterLayers.tsx` so developer wireframe preview can be enabled on demand for future debugging.
+  - Verification & Milestone Signoff:
+    - Production build validated successfully with clean JSX registry compilation (`registry.tsx`).
+    - All four manual animation and motion checks confirmed passed:
+      1. Waving gesture with shoulder articulation and hand oscillation.
+      2. Thinking posture with chin touch and head tilt.
+      3. Organic automatic eye blinking squashing at randomized intervals (3.5s–6.0s).
+      4. Reduced-motion compliance with static resting poses across talking, thinking, explaining, waving, and happy states.
+    - Character geometry (200×250 viewBox, 0.65 scale factor, 232×231 px composite), viewport docking, dragging, position persistence, and Shadow DOM isolation preserved.
+  - Status: Phase 2 Step 1A and Step 1B fully completed. Ready for Phase 2 Step 2.
+
+---
+
+### Session 20: Final Documentation & Mascot Naming Cleanup Before Git Commit
+- **Focus**: Repository-wide documentation, manifest, and licensing terminology cleanup ensuring complete accuracy for the WebMate Original Mascot.
+- **Accomplishments**:
+  - `apps/extension/assets/character/manifests/character.manifest.json`:
+    - Renamed manifest identifier from `shinchan-standard` to `webmate-mascot-standard`.
+    - Updated description to "Layer hierarchy, coordinate anchors, and animation metadata for the WebMate companion rig."
+  - `apps/extension/README.md`:
+    - Updated Phase 2 Status to reflect Step 1A & 1B Completed with original mascot artwork, 12-layer SVG rig, and GSAP procedural animation engine.
+  - `docs/CHARACTER_ARCHITECTURE_PHASE1.md`:
+    - Updated character identity, manifest schema preview (`webmate-mascot-standard`), and licensing section.
+  - `docs/CHARACTER_ASSETS.md`:
+    - Updated character visual persona, manifest reference, implementation status, and licensing architecture.
+  - `docs/PROJECT_OVERVIEW.md`:
+    - Updated product vision and companion concept describing original mascot visual persona and decoupled rig.
+  - `docs/DEVELOPMENT_ROADMAP.md`:
+    - Updated Step 1 checklist item to reference the WebMate mascot persona.
+  - `README.md` & `LICENSE`:
+    - Replaced outdated inspiration notices with clear Intellectual Property, Mascot Artwork & Licensing sections distinguishing Apache-2.0 open-source code from original mascot creative artwork, along with explicit third-party disclaimers.
+  - Asset Documentation (`apps/extension/assets/character/README.md`, `expressions/README.md`, `ingestion/README.md`):
+    - Synchronized all guides to reference the WebMate Original Mascot architecture and licensing policies.
+  - Code Docstrings (`packages/shared/src/index.ts`, `expressions.config.ts`, `CharacterRig.tsx`, `character/animation/index.ts`, `.gitignore`):
+    - Updated docstrings and comments to reference the WebMate companion rig.
+  - Preserved Architectures:
+    - Retained all character artwork, GSAP animation behavior, docking, dragging, small-viewport safety, and Shadow DOM isolation untouched.
+  - Status: Documentation fully synchronized and release-ready.
+
+---
+
 ## Daily Log Entry Template (For Future Updates)
 
 ```markdown

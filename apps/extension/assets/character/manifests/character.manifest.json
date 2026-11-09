@@ -1,12 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "name": "shinchan-standard",
+  "name": "webmate-mascot-standard",
   "version": "1.0.0",
-  "description": "Layer hierarchy, coordinate anchors, and animation metadata for the Shinchan companion rig.",
+  "description": "Layer hierarchy, coordinate anchors, and animation metadata for the WebMate companion rig.",
   "viewBox": "0 0 200 250",
   "anchors": {
     "shadow": { "x": 100, "y": 240 },
     "torso": { "x": 100, "y": 170 },
+    "leftHip": { "x": 88, "y": 200 },
+    "rightHip": { "x": 112, "y": 200 },
     "head": { "x": 100, "y": 115 },
     "leftShoulder": { "x": 70, "y": 135 },
     "rightShoulder": { "x": 130, "y": 135 },
@@ -22,16 +24,28 @@
       "description": "Ground drop shadow plane with dynamic scaleX transform."
     },
     {
+      "id": "layer-leg-left",
+      "zIndex": 5,
+      "anchor": "leftHip",
+      "description": "Background left leg and sneaker."
+    },
+    {
       "id": "layer-arm-left",
       "zIndex": 10,
       "anchor": "leftShoulder",
       "description": "Background support arm."
     },
     {
+      "id": "layer-leg-right",
+      "zIndex": 15,
+      "anchor": "rightHip",
+      "description": "Foreground right leg and sneaker."
+    },
+    {
       "id": "layer-body",
       "zIndex": 20,
       "anchor": "torso",
-      "description": "Torso, red shirt, yellow shorts, legs and shoes."
+      "description": "Torso, red shirt, and yellow shorts."
     },
     {
       "id": "layer-arm-right",

@@ -1,4 +1,5 @@
 import React from 'react';
+import { COMPANION_CARD_HEIGHT, COMPANION_CARD_WIDTH } from '@webmate/shared';
 
 export interface CompanionPlaceholderProps {
   /** Indicates whether the container is actively being dragged by pointer */
@@ -20,8 +21,8 @@ export const CompanionPlaceholder: React.FC<CompanionPlaceholderProps> = ({
       id="webmate-companion-card"
       className="webmate-card flex items-center gap-3 px-3.5 py-3 rounded-xl bg-slate-900 border border-slate-700/80 shadow-2xl shadow-black/40 select-none text-slate-100"
       style={{
-        width: '232px',
-        height: '68px',
+        width: `${COMPANION_CARD_WIDTH}px`,
+        height: `${COMPANION_CARD_HEIGHT}px`,
         boxSizing: 'border-box',
         backgroundColor: '#0F172A',
         borderColor: isDragging ? '#3B82F6' : '#334155',

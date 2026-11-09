@@ -30,6 +30,11 @@ apps/extension/
 │       ├── App.tsx
 │       └── style.css
 ├── src/
+│   ├── character/                  # Asset-independent character rig foundation
+│   │   ├── CharacterRig.tsx        # Transparent SVG rig container (viewBox: 0 0 200 250)
+│   │   ├── CharacterLayers.tsx     # Independent renderers for all 12 rig layer slots
+│   │   ├── expressions.config.ts   # Configuration for 8 canonical facial expressions
+│   │   └── types.ts                # Rig render interfaces & asset registry contracts
 │   └── content/
 │       ├── mount.ts                # Modular Shadow DOM mounting & idempotency manager
 │       ├── FloatingCompanion.tsx   # Draggable floating container with docking transitions
@@ -39,7 +44,7 @@ apps/extension/
 │       ├── storage.ts              # Chrome Storage API (chrome.storage.local) persistence
 │       └── store.ts                # Zustand runtime state store for positioning and docking
 ├── assets/
-│   └── character/                  # Asset manifests, schemas, and ingestion guides
+│   └── character/                  # Manifests, layer slots, expression directories, and ingestion guides
 ├── package.json
 ├── tsconfig.json
 ├── wxt.config.ts                   # WXT configuration & manifest definition
@@ -60,14 +65,17 @@ Inside `apps/extension`:
 - `pnpm build` — Build extension for Chrome MV3.
 - `pnpm zip` — Package extension zip for Chrome Web Store distribution.
 
-## Current Status (Phase 1, Step 3)
+## Current Status (Phase 2, Steps 1A & 1B Completed)
 
-Phase 1, Step 3 implements the draggable floating companion and docking system:
-- **Pointer Interaction**: Full support for mouse, touch, and pen via Pointer Events with pointer capture and drag threshold.
-- **Viewport Docking**: Automatic left/right edge snapping with a 20px screen margin and clamped vertical position.
-- **Position Persistence**: State restoration and persistence using `chrome.storage.local` with normalized vertical coordinates for responsive window resizing.
-- **Performance**: GPU-accelerated `translate3d` positioning and `requestAnimationFrame` render throttling.
-- **State Architecture**: Centralized Zustand extension store (`useCompanionStore`).
+WebMate features a 100% original, fully articulated mascot companion powered by an asset-independent 12-layer SVG rig and GSAP procedural animation engine:
+- **Transparent Rig Renderer**: `CharacterRig.tsx` renders in SVG coordinate space (`0 0 200 250`) without background cards or color planes.
+- **12 Layer Slots**: Ground contact shadow, left/right legs, left/right arms, torso/body, head, blush, eyebrows, eyes, mouth, and emotional FX overlays.
+- **Original Mascot Artwork**: Premium original 2D vector artwork package (`apps/extension/src/character/artwork/`) adhering strictly to project IP and zero-copyright guidelines.
+- **Expression Configurations**: Full typed configurations for 8 canonical expressions (`normal`, `happy`, `thinking`, `surprised`, `confused`, `explaining`, `talking`, `sleeping`).
+- **GSAP Animation Subsystem**: Procedural GSAP timelines (`idle`, `blinking`, `waving`, `thinking`, `explaining`, `talking`, `happy`, `sleeping`), lifecycle management, random organic eye blinking (3.5s–6.0s), drag pause/resume optimization, and full `prefers-reduced-motion` compliance.
+- **Stream-Triggered Speech Driver**: `TalkingAnimationDriver` lifecycle interface for event-driven mouth pacing on incoming tokens.
+- **Developer Diagnostics**: Optional wireframe preview (`showDevRig`, disabled by default in production) for anchor and slot alignment calibration.
+- **Licensing Clarity**: Open-source Apache-2.0 license covers the extension codebase, rig architecture, and animation engine; mascot character designs and vector assets represent original WebMate artwork.
 
 **Next Steps**:
-- Phase 2: Articulated character vector rig, animation state engine, and lip-sync driver.
+- Phase 2, Step 2: Interactive Gestures & Dynamic Pointing.

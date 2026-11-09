@@ -117,21 +117,23 @@
       License.
 
 ================================================================================
-THIRD-PARTY INTELLECTUAL PROPERTY & TRADEMARK NOTICE
+INTELLECTUAL PROPERTY, MASCOT ARTWORK & TRADEMARK NOTICE
 ================================================================================
 
 This software source code is licensed under the Apache License, Version 2.0.
 
-However, please be advised:
-1. "Crayon Shin-chan" (クレヨンしんちゃん), its characters, likenesses, artwork,
-   and associated intellectual properties are the exclusive trademark and
-   copyright of Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation,
-   and TV Asahi Corporation.
-2. This open-source license applies ONLY to original software source code authored
-   for the WebMate project. It DOES NOT grant, convey, or license any rights,
-   trademarks, or copyrights to proprietary characters, cartoon likenesses,
-   or commercial artwork.
-3. No copyrighted or proprietary character assets are distributed with this
-   repository. Any third-party character assets used locally by end users or
-   developers require appropriate licensing or fair use authorization from their
-   respective copyright holders.
+Please be advised:
+1. The WebMate mascot companion is a 100% original creative work authored specifically
+   for the WebMate project. Character designs, vector layer assets, and visual styles
+   represent original WebMate artwork.
+2. WebMate is an independent project. The mascot is NOT Crayon Shin-chan (Shinnosuke
+   Nohara) and this repository does not include, reproduce, or distribute copyrighted
+   artwork, character likenesses, broadcast animation frames, or trademarks owned by
+   Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation Co., Ltd., or TV Asahi
+   Corporation.
+3. This open-source license applies to original software source code authored for the
+   WebMate project (including the 12-layer character rig, GSAP animation controllers,
+   docking physics, and content script injection container).
+4. No third-party copyrighted character assets are distributed with this repository.
+   Any third-party character assets used locally by end users or developers require
+   independent licensing or fair use authorization from their respective copyright holders.

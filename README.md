@@ -123,12 +123,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full contribution guidelines.
 
 ---
 
-## Third-Party Intellectual Property & Trademark Disclaimer
+## Intellectual Property, Mascot Artwork & Licensing
 
-The initial visual concept for WebMate is inspired by the character *Crayon Shin-chan*.
+WebMate features a **100% original mascot companion** designed specifically for this project:
 
-> **IMPORTANT LEGAL NOTICE**:
-> 1. "Crayon Shin-chan" (クレヨンしんちゃん), character likenesses, and related names are the intellectual property and registered trademarks of Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation, and TV Asahi Corporation.
-> 2. This repository **does not include or distribute copyrighted character artwork**, sprite sheets, or proprietary media files.
-> 3. The Apache 2.0 license applies solely to the software source code created for the WebMate project and does not convey or license any third-party intellectual property or commercial character rights.
-> 4. For full details on asset handling and local customization, see [docs/CHARACTER_ASSETS.md](docs/CHARACTER_ASSETS.md).
+> **LEGAL & LICENSING NOTICE**:
+> 1. **Open-Source Code (Apache-2.0)**: The WebMate source code, including the extension harness, 12-layer SVG character rig, procedural GSAP animation controllers, viewport docking engine, and Shadow DOM mounting container, is licensed under the **Apache License, Version 2.0**.
+> 2. **Original Mascot Artwork**: The character mascot is a completely original 2D vector creation. Character designs, vector assets (`apps/extension/src/character/artwork/`), and visual palettes represent original WebMate artwork.
+> 3. **Third-Party Rights Disclaimer**: WebMate is an independent open-source project. The mascot is **NOT** Crayon Shin-chan (Shinnosuke Nohara) and does not contain, reproduce, or distribute copyrighted artwork, character likenesses, broadcast frames, or trademarks owned by Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation Co., Ltd., or TV Asahi Corporation.
+> 4. For full technical details on asset architecture, vector layers, and local customization, see [docs/CHARACTER_ASSETS.md](docs/CHARACTER_ASSETS.md).

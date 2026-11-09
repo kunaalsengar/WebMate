@@ -4,11 +4,12 @@ This directory provides developer instructions and schema validation specificati
 
 ---
 
-## 1. Third-Party Intellectual Property Notice
+## 1. Intellectual Property & Mascot Licensing Architecture
 
-- **Crayon Shin-chan** (クレヨンしんちゃん), its characters, likenesses, artwork, and associated properties are the exclusive trademark and copyright of **Yoshito Usui**, **Futabasha Publishers Ltd.**, **Shin-ei Animation Co., Ltd.**, and **TV Asahi Corporation**.
-- WebMate is an open-source development project licensed under the Apache License, Version 2.0.
-- **Do not commit, upload, or distribute copyrighted character artwork, extracted video frames, or commercial sprite sheets to this public repository.**
+- **WebMate Original Mascot**: The character mascot is a **100% original creative design** created specifically for WebMate. All vector geometries, palettes, layer components, and character designs represent original WebMate artwork.
+- **Third-Party Intellectual Property Disclaimer**: WebMate is an independent project. The mascot is **NOT** Crayon Shin-chan (Shinnosuke Nohara) and does not contain, reproduce, or distribute copyrighted artwork, character likenesses, broadcast frames, or trademarks owned by Yoshito Usui, Futabasha Publishers Ltd., Shin-ei Animation Co., Ltd., or TV Asahi Corporation.
+- WebMate software is an open-source development project licensed under the Apache License, Version 2.0.
+- **Do not commit, upload, or distribute third-party copyrighted character artwork, extracted video frames, or commercial sprite sheets to this public repository.**
 - Local asset paths (`assets/copyrighted/`, `*.psd`, `*.ai`) are strictly excluded in `.gitignore`.
 
 ---

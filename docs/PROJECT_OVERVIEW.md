@@ -22,12 +22,12 @@ WebMate solves this by embedding an interactive, context-aware companion nativel
 ## 3. Product Vision & Companion Persona
 
 ### The Companion Concept
-- **Visual Appearance**: A cheerful, stylized 2D cartoon character rendered via scalable vector graphics (SVG) that rests docked at the bottom-right or top-right of the viewport.
-- **Initial Inspiration**: Modeled conceptually after the lively, curious, and humorous persona of *Shinchan*. The companion reacts to webpage events, "looks" at elements when asked, thinks with visual animations, and celebrates when the user completes a task.
+- **Visual Appearance**: A cheerful, stylized 2D cartoon boy mascot rendered via scalable vector graphics (SVG) that rests docked at the viewport edge. Features a red-orange top with lightning emblem, warm mustard yellow shorts, messy dark side-swept hair, and expressive anime eyes.
+- **Original Mascot Persona**: Lively, curious, playful, and expressive. The companion reacts to webpage events, "looks" at elements when asked, thinks with visual animations, and celebrates when the user completes a task.
 - **Tone of Voice**: Friendly, approachable, playful, yet direct and helpful. It avoids dense academic jargon unless specifically requested.
 
 > [!NOTE]
-> Character concept inspiration does not imply ownership. To respect intellectual property laws, no proprietary assets are distributed with the public repository. An open-source customizable vector rig will serve as the default baseline (see [docs/CHARACTER_ASSETS.md](CHARACTER_ASSETS.md)).
+> WebMate features a 100% original mascot design and vector artwork package. The codebase is licensed under Apache-2.0, providing an open-source, decoupled 12-layer SVG character rig and procedural GSAP animation subsystem (see [docs/CHARACTER_ASSETS.md](CHARACTER_ASSETS.md)).
 
 ---
 
