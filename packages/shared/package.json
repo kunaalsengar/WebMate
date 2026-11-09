@@ -1,0 +1,14 @@
+{
+  "name": "@webmate/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared TypeScript interfaces, constants, and messaging contracts for WebMate",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
