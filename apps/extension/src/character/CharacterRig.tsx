@@ -5,6 +5,7 @@ import type {
   CharacterExpression,
   CharacterLayerDefinition,
   CharacterLayerId,
+  CompanionPosition,
 } from '@webmate/shared';
 import {
   CHARACTER_BASE_HEIGHT,
@@ -14,7 +15,12 @@ import {
   CHARACTER_RIG_SCALE,
 } from '@webmate/shared';
 import characterManifest from '../../assets/character/manifests/character.manifest.json';
-import { useCharacterAnimation, type TalkingAnimationDriver } from './animation';
+import {
+  useCharacterAnimation,
+  type PointingAnimationDriver,
+  type PointingTarget,
+  type TalkingAnimationDriver,
+} from './animation';
 import { characterArtworkRegistry } from './artwork';
 import { CharacterLayerRenderer } from './CharacterLayers';
 import { getExpressionConfig } from './expressions.config';
@@ -35,8 +41,16 @@ export interface CharacterRigProps {
   showDevRig?: boolean;
   /** Whether the companion is undergoing active pointer drag (dampens/pauses motion) */
   isDragging?: boolean;
+  /** Declarative viewport target (HTMLElement or DOMRect) to point toward */
+  pointingTarget?: PointingTarget | null;
+  /** Current floating companion viewport position (used for docked/post-drag pointing accuracy) */
+  companionPosition?: CompanionPosition | null;
   /** Optional callback providing access to the TalkingAnimationDriver interface */
   onTalkingDriverReady?: (driver: TalkingAnimationDriver) => void;
+  /** Optional callback providing access to the PointingAnimationDriver interface */
+  onPointingDriverReady?: (driver: PointingAnimationDriver) => void;
+  /** Optional callback invoked if dynamic pointing ends internally */
+  onPointingStop?: () => void;
   /** Optional registry of loaded SVG layer fragments */
   assetRegistry?: CharacterAssetRegistry;
   /** Optional container class name */
@@ -65,7 +79,11 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
   height,
   showDevRig = false,
   isDragging = false,
+  pointingTarget,
+  companionPosition = null,
   onTalkingDriverReady,
+  onPointingDriverReady,
+  onPointingStop,
   assetRegistry = characterArtworkRegistry,
   className = '',
   style = {},
@@ -91,7 +109,11 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
     expression,
     isDragging,
     anchors,
+    pointingTarget,
+    companionPosition,
     onTalkingDriverReady,
+    onPointingDriverReady,
+    onPointingStop,
   });
 
   // 5. Sorted layers by z-index ascending

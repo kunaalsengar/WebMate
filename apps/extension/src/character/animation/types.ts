@@ -4,7 +4,9 @@ import type {
   CharacterAnimationState,
   CharacterExpression,
   CharacterLayerId,
+  CompanionPosition,
 } from '@webmate/shared';
+import type { PointingPose, PointingTarget } from './pointingGeometry';
 
 /**
  * References to animatable layer group elements within the SVG CharacterRig.
@@ -84,6 +86,20 @@ export interface TalkingAnimationDriver {
 }
 
 /**
+ * Public imperative API controlling dynamic pointing toward elements or viewport rectangles.
+ */
+export interface PointingAnimationDriver {
+  /** Points the mascot arm, head, and gaze toward an HTMLElement or viewport bounding rect */
+  pointAt: (target: PointingTarget) => void;
+  /** Interrupts current pointing safely and settles the mascot back to its neutral/base pose */
+  stopPointing: () => void;
+  /** Reports whether the mascot is actively pointing at a target */
+  isPointing: () => boolean;
+  /** Returns the most recently resolved PointingPose, if any */
+  getCurrentPose: () => PointingPose | null;
+}
+
+/**
  * Options configuring the character animation controller hook.
  */
 export interface CharacterAnimationHookOptions {
@@ -97,8 +113,16 @@ export interface CharacterAnimationHookOptions {
   isDragging?: boolean;
   /** Anchor coordinates dictionary from manifest */
   anchors: RigAnchors;
+  /** Declarative target to point toward (HTMLElement or viewport rect) */
+  pointingTarget?: PointingTarget | null;
+  /** Current floating companion viewport position (used for post-drag & docked precision) */
+  companionPosition?: CompanionPosition | null;
   /** Optional callback providing access to the stable TalkingAnimationDriver interface */
   onTalkingDriverReady?: (driver: TalkingAnimationDriver) => void;
+  /** Optional callback providing access to the stable PointingAnimationDriver interface */
+  onPointingDriverReady?: (driver: PointingAnimationDriver) => void;
+  /** Optional callback invoked if pointing stops internally (e.g. target detached or state override) */
+  onPointingStop?: () => void;
   /** Optional callback fired when animation transitions occur */
   onStateTransition?: (fromState: CharacterAnimationState, toState: CharacterAnimationState) => void;
 }
