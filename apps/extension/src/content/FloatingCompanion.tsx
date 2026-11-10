@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CharacterRig } from '../character/CharacterRig';
 import type { PointingAnimationDriver, PointingTarget } from '../character/animation';
 import { characterArtworkRegistry } from '../character/artwork';
+import { buildMergedArtworkRegistry } from '../character/customization';
 import { CompanionPlaceholder } from './CompanionPlaceholder';
 import { CHARACTER_RIG_SCALE } from '@webmate/shared';
-import { useCompanionStore } from './store';
+import { useCustomCharacterAssetsSync } from './customizationSync';
+import { useCompanionStore, type CompanionState } from './store';
 import { useDraggable } from './useDraggable';
 
 /**
@@ -40,8 +42,21 @@ export const FloatingCompanion: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const pointingDriverRef = useRef<PointingAnimationDriver | null>(null);
   const { position, isDragging, isInitialized, dragProps } = useDraggable();
-  const { characterExpression, characterAnimationState, showDevRig, pointingTarget } =
-    useCompanionStore();
+  useCustomCharacterAssetsSync();
+  const characterExpression = useCompanionStore(
+    (state: CompanionState) => state.characterExpression
+  );
+  const characterAnimationState = useCompanionStore(
+    (state: CompanionState) => state.characterAnimationState
+  );
+  const showDevRig = useCompanionStore((state: CompanionState) => state.showDevRig);
+  const pointingTarget = useCompanionStore((state: CompanionState) => state.pointingTarget);
+  const customLayers = useCompanionStore((state: CompanionState) => state.customLayers);
+
+  const assetRegistry = useMemo(
+    () => buildMergedArtworkRegistry(customLayers, characterArtworkRegistry),
+    [customLayers]
+  );
 
   const handlePointingDriverReady = useCallback((driver: PointingAnimationDriver) => {
     pointingDriverRef.current = driver;
@@ -111,7 +126,7 @@ export const FloatingCompanion: React.FC = () => {
           companionPosition={position}
           onPointingDriverReady={handlePointingDriverReady}
           onPointingStop={handlePointingStop}
-          assetRegistry={characterArtworkRegistry}
+          assetRegistry={assetRegistry}
         />
         {/* Existing Navy-and-White Companion Badge */}
         <CompanionPlaceholder isDragging={isDragging} />
