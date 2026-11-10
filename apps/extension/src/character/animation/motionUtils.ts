@@ -49,9 +49,44 @@ export function resolveRigElements(scope: Element): CharacterRigLayerElements {
   };
 }
 
+interface GsapSvgTransformCache {
+  svg?: boolean;
+  uncache?: number;
+  originIsAbsolute?: boolean;
+  xOrigin?: number;
+  yOrigin?: number;
+  xOffset?: number;
+  yOffset?: number;
+}
+
+function getGsapSvgCache(el: SVGGElement): GsapSvgTransformCache | undefined {
+  return (el as unknown as { _gsap?: GsapSvgTransformCache })._gsap;
+}
+
+function isSvgPivotCalibrated(el: SVGGElement, anchor: { x: number; y: number }): boolean {
+  const cache = getGsapSvgCache(el);
+  if (
+    !cache ||
+    !cache.svg ||
+    cache.uncache ||
+    !cache.originIsAbsolute ||
+    el.getAttribute('data-svg-origin') !== `${anchor.x} ${anchor.y}`
+  ) {
+    return false;
+  }
+
+  const dx = Math.abs((cache.xOrigin ?? Number.NaN) - anchor.x);
+  const dy = Math.abs((cache.yOrigin ?? Number.NaN) - anchor.y);
+  const offX = Math.abs(cache.xOffset ?? 0);
+  const offY = Math.abs(cache.yOffset ?? 0);
+
+  return dx < 0.05 && dy < 0.05 && offX < 0.05 && offY < 0.05;
+}
+
 /**
  * Calibrates SVG transform origins for each layer group based on manifest anchor coordinates.
- * Ensures rotational and scale transforms articulate around anatomically correct pivots.
+ * Uses GSAP's absolute SVG viewBox `svgOrigin` exclusively (never relative CSS `transformOrigin`)
+ * so rotational and scale transforms articulate around anatomically accurate joint pivots.
  */
 export function applyLayerAnchorPivots(
   targets: CharacterRigLayerElements,
@@ -67,12 +102,18 @@ export function applyLayerAnchorPivots(
   const shadowAnchor = anchors.shadow ?? { x: 100, y: 240 };
 
   const setPivot = (el: SVGGElement | null, anchor: { x: number; y: number }) => {
-    if (el) {
-      gsap.set(el, {
-        transformOrigin: `${anchor.x}px ${anchor.y}px`,
-        svgOrigin: `${anchor.x} ${anchor.y}`,
-      });
+    if (!el || isSvgPivotCalibrated(el, anchor)) {
+      return;
     }
+
+    if (!getGsapSvgCache(el)) {
+      el.setAttribute('data-svg-origin', `${anchor.x} ${anchor.y}`);
+    }
+
+    gsap.set(el, {
+      svgOrigin: `${anchor.x} ${anchor.y}`,
+      smoothOrigin: false,
+    });
   };
 
   setPivot(targets.shadow, shadowAnchor);
@@ -87,6 +128,32 @@ export function applyLayerAnchorPivots(
   setPivot(targets.eyes, headAnchor);
   setPivot(targets.mouth, mouthAnchor);
   setPivot(targets.fx, headAnchor);
+}
+
+/**
+ * Re-synchronizes `#layer-head`'s SVG DOM transform attribute with GSAP's transform cache
+ * after React re-renders `transform` for expression `headTiltDeg` changes.
+ */
+export function syncHeadTransformAfterReactRender(
+  headEl: SVGGElement | null,
+  headAnchor?: { x: number; y: number }
+): void {
+  if (!headEl) return;
+  const anchor = headAnchor ?? { x: 100, y: 115 };
+  const cache = getGsapSvgCache(headEl);
+  if (cache && cache.svg && cache.originIsAbsolute && !cache.uncache) {
+    gsap.set(headEl, {
+      x: '+=0',
+      y: '+=0',
+      rotation: '+=0',
+    });
+    return;
+  }
+
+  gsap.set(headEl, {
+    svgOrigin: `${anchor.x} ${anchor.y}`,
+    smoothOrigin: false,
+  });
 }
 
 /**

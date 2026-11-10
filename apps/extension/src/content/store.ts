@@ -5,7 +5,16 @@ import type {
   CompanionPosition,
   DockSide,
 } from '@webmate/shared';
+import type { PointingTarget } from '../character/animation';
 import { calculateDefaultPosition } from './docking';
+
+const INCOMPATIBLE_POINTING_STATES = new Set<CharacterAnimationState>([
+  'waving',
+  'thinking',
+  'explaining',
+  'happy',
+  'sleeping',
+]);
 
 /**
  * State contract for WebMate's floating companion runtime store.
@@ -27,6 +36,8 @@ export interface CompanionState {
   characterAnimationState: CharacterAnimationState;
   /** Toggle for development wireframe preview of character anchors and slots */
   showDevRig: boolean;
+  /** Active viewport target for dynamic character pointing (HTMLElement or DOMRect) */
+  pointingTarget: PointingTarget | null;
 
   /** Action to update complete position and dockSide */
   setPosition: (position: CompanionPosition) => void;
@@ -46,6 +57,10 @@ export interface CompanionState {
   setCharacterAnimationState: (state: CharacterAnimationState) => void;
   /** Action to toggle developer rig wireframe mode */
   setShowDevRig: (show: boolean) => void;
+  /** Points the mascot dynamically toward an HTMLElement or viewport bounding rectangle */
+  pointAt: (target: PointingTarget) => void;
+  /** Interrupts active pointing and settles mascot back to neutral/resting pose */
+  stopPointing: () => void;
   /** Action to set initialized position from storage or defaults */
   initializePosition: (position: CompanionPosition) => void;
   /** Action to reset position to default bottom-right */
@@ -64,6 +79,7 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   characterExpression: 'normal',
   characterAnimationState: 'idle',
   showDevRig: false,
+  pointingTarget: null,
 
   setPosition: (position) => set({ position }),
   setCoordinates: ({ x, y }) =>
@@ -74,8 +90,22 @@ export const useCompanionStore = create<CompanionState>((set) => ({
   setIsVisible: (isVisible) => set({ isVisible }),
   setActiveTab: (activeTab) => set({ activeTab }),
   setCharacterExpression: (characterExpression) => set({ characterExpression }),
-  setCharacterAnimationState: (characterAnimationState) => set({ characterAnimationState }),
+  setCharacterAnimationState: (characterAnimationState) =>
+    set((state) => ({
+      characterAnimationState,
+      pointingTarget: INCOMPATIBLE_POINTING_STATES.has(characterAnimationState)
+        ? null
+        : state.pointingTarget,
+    })),
   setShowDevRig: (showDevRig) => set({ showDevRig }),
+  pointAt: (pointingTarget) =>
+    set((state) => ({
+      pointingTarget,
+      characterAnimationState: INCOMPATIBLE_POINTING_STATES.has(state.characterAnimationState)
+        ? 'idle'
+        : state.characterAnimationState,
+    })),
+  stopPointing: () => set({ pointingTarget: null }),
   initializePosition: (position) =>
     set({ position, isInitialized: true }),
   resetPosition: (viewportWidth, viewportHeight) =>

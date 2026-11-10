@@ -422,6 +422,57 @@ This log tracks day-by-day development milestones, decisions, completed tasks, a
 
 ---
 
+### Session 21: Phase 2 Step 2A Dynamic Pointing System
+- **Focus**: Implement a reusable 360-degree dynamic pointing system enabling the 12-layer WebMate mascot to point toward arbitrary webpage `HTMLElement`s or viewport `DOMRect`s across scroll, resize, dock side transitions, and `prefers-reduced-motion`.
+- **Accomplishments**:
+  - Created `apps/extension/src/character/animation/pointingGeometry.ts`:
+    - Pure coordinate and anatomy solver supporting `HTMLElement`, `DOMRect`, and `PointingRect` targets (`resolveTargetViewportPoint`), authoritative dock-aware rig bounds (`resolveRigViewportBounds`), SVG-to-viewport anchor mapping (`svgAnchorToViewport`), midline deadzone/hysteresis arm selection (`selectPointingArm`), continuous half-plane angle wrapping (`calculatePointingArmRotation`), and full-body coordinated pose generation (`calculatePointingPose`) covering pointing arm, non-pointing arm counterbalance, subtle torso lean, head tilt, eye gaze offset, mouth horizontal pivot compensation, blush/FX follow, and ground shadow shift.
+  - Created `apps/extension/src/character/animation/pointingMotion.ts`:
+    - GSAP transition builders (`buildPointingTimeline`, `buildPointingResetTimeline`) decoupled from geometry calculations.
+    - Enforces `prefers-reduced-motion` static placement via `gsap.set()`, smooth spring entry (`back.out`), snappy tracking updates, and clean property isolation so independent periodic blinking (`eyes.scaleY`, `eyebrows.y`) and `TalkingAnimationDriver` speech pulses (`mouth.scaleX`, `mouth.scaleY`) never conflict.
+  - Updated `apps/extension/src/character/animation/types.ts` & `index.ts`:
+    - Defined `PointingAnimationDriver` (`pointAt`, `stopPointing`, `isPointing`, `getCurrentPose`) and extended `CharacterAnimationHookOptions` (`pointingTarget`, `companionPosition`, `onPointingDriverReady`, `onPointingStop`).
+    - Exported new pointing modules via animation barrel.
+  - Updated `apps/extension/src/character/animation/lifecycle.ts`:
+    - Added `pointingTimeline`, `suspendPrimaryTimeline`, `playPointingPose`, `stopPointingPose`, and `killPointingTimeline`, integrating pointing cleanup/pause/resume into `AnimationLifecycleManager` without reverting unrelated overlays or speech mouth scale.
+  - Updated `apps/extension/src/character/animation/controller.ts`:
+    - Extended `CharacterAnimationController` and `useCharacterAnimation` with `pointAt`, `stopPointing`, `updateCompanionPosition`, `getPointingDriver`, passive capture `scroll` + `resize` listeners throttled via `requestAnimationFrame`, drag pause/recalibration on drop, detached element auto-recovery, and unmount-only cleanup.
+  - Updated `apps/extension/src/character/CharacterRig.tsx`:
+    - Wired `pointingTarget`, `companionPosition`, `onPointingDriverReady`, and `onPointingStop` props into `useCharacterAnimation`.
+  - Updated `apps/extension/src/content/store.ts` & `FloatingCompanion.tsx`:
+    - Added `pointingTarget`, `pointAt`, and `stopPointing` actions to `useCompanionStore` with automatic state coordination (preserving pointing across `idle` / `talking` while letting full-body gestures override).
+    - Connected `FloatingCompanion` to `CharacterRig` and exposed isolated-world runtime API on `window.__WEBMATE__` with unmount cleanup.
+- **Preservation**:
+  - Retained all Phase 1 docking, dragging, `chrome.storage.local` persistence, Shadow DOM isolation, existing 12-layer artwork, manifest anchors, and all 8 procedural GSAP timelines untouched.
+  - Deferred Step 2B asset customization and Phase 3 UI/AI features cleanly.
+- **Status**: Phase 2 Step 2A implementation complete; pending build check and manual browser verification.
+
+---
+
+### Session 22: Phase 2 Step 2A Dynamic Pointing Visual Pose Correction
+- **Focus**: Diagnose and fix why `window.__WEBMATE__.pointAt(target)` computed valid `getCurrentPose()` values (`armLeftRotation`, `armRightRotation`, torso/head/eye offsets) while the SVG mascot visually stayed near its neutral standing pose instead of visibly extending its arm toward targets.
+- **Root Causes Identified**:
+  1. **`transformOrigin` + `svgOrigin` LIFO Overwrite in GSAP `CSSPlugin`**: `applyLayerAnchorPivots()` passed both `transformOrigin: "${anchor.x}px ${anchor.y}px"` and `svgOrigin: "${anchor.x} ${anchor.y}"` in the same `gsap.set()` call. In GSAP v3.15.1, `svgOrigin`'s PropTween runs first and relative `transformOrigin` runs second (`bbox.x + anchor.x`, `bbox.y + anchor.y`), shifting `#layer-arm-left`'s pivot from `(70, 135)` to `(127, 262)` below the feet and swinging the pointing arm out of the `200×250` viewBox behind the companion card.
+  2. **Non-Identity Matrix `svgOrigin` Drift & Inline SVG `transformOrigin`**: `buildPointingTimeline()` re-called `applyLayerAnchorPivots()` during active breathing/pointing transforms, risking inverse-matrix `svgOrigin` recalibration drift, while `CharacterLayers.tsx` also applied relative inline `style={{ transformOrigin }}` on 9 `<g>` elements.
+  3. **React `headTiltDeg` Transform Conflict**: Switching `expression` (`normal` vs `thinking`/`happy`/etc.) while pointing updated `#layer-head`'s React `transform` attribute without re-syncing GSAP's matrix cache.
+  4. **Chibi Arm Proportions & Silhouette Occlusion**: Short `41`-unit arms behind a wide head (`zIndex: 40`) and red shirt (`ArmLeft` at `zIndex: 10`) visually disappeared behind the ears at steep upward clamps (`152°`/`-152°`) or clipped inside the shorts at low angles (`-12°`/`18°`), while fixed `(0, 0)` arm translations separated cuffs slightly from the leaning torso.
+- **Accomplishments**:
+  - Updated `apps/extension/src/character/animation/motionUtils.ts`:
+    - Switched `applyLayerAnchorPivots()` exclusively to `svgOrigin` + `smoothOrigin: false` (removing `transformOrigin`), added `_gsap` cache verification (`isSvgPivotCalibrated`) so already-calibrated pivots are never re-applied over active transforms, pre-seeded `data-svg-origin` on uninitialized layers, and added `syncHeadTransformAfterReactRender()` using zero-delta GSAP relative updates.
+  - Updated `apps/extension/src/character/CharacterLayers.tsx`:
+    - Removed conflicting inline `style={{ transformOrigin }}` from all 9 articulated `<g>` layer components (`Shadow`/`Blush`/`Effects` unchanged) while keeping all layer IDs, `transform={transform}`, and `showDevRig` guides intact.
+  - Updated `apps/extension/src/character/animation/definitions.ts`:
+    - Re-calibrated rotation signs in `buildWavingTimeline` (`-128°` / `-108°`..`-134°`), `buildThinkingTimeline` (`+130°`), and `buildHappyTimeline` (`+128°` / `-128°`) to articulate naturally around true manifest shoulder pivots `(70, 135)` and `(130, 135)` while preserving all `isReducedMotion` guards.
+  - Updated `apps/extension/src/character/animation/pointingGeometry.ts` & `pointingMotion.ts`:
+    - Tightened shoulder clamps to clear ears and torso/shorts (`[+20°, +140°]` left, `[-140°, -22°]` right), added torso-attached shoulder socket tracking (`computeTorsoPointDelta`), longitudinal arm reach (`2.0` SVG units) and `scaleY` extension (`1.18`, `1.08` near overlap), and applied full `{ x, y, rotation, scaleX, scaleY }` arm transforms across animated and reduced-motion/reset timelines without disturbing blink or `TalkingAnimationDriver` speech mouth properties.
+  - Updated `apps/extension/src/character/animation/controller.ts`:
+    - Tracked `lastExpression` changes during active pointing, synchronously re-syncing `#layer-head` with GSAP's transform cache and refreshing the pointing pose when expressions change.
+- **Preservation**:
+  - Retained all artwork shapes, manifest anchors, layer IDs, blinking, `TalkingAnimationDriver`, `prefers-reduced-motion`, drag handling, docking, storage persistence, Shadow DOM isolation, and all 8 animation states.
+- **Status**: Source-level pointing pose corrections implemented; pending build check and manual browser verification (Phase 2 Step 2A remains open).
+
+---
+
 ## Daily Log Entry Template (For Future Updates)
 
 ```markdown

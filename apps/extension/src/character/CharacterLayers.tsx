@@ -105,7 +105,6 @@ export const LegLeftLayer: React.FC<LayerRenderProps> = ({
       id="layer-leg-left"
       className="character-layer layer-leg-left"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -132,7 +131,6 @@ export const ArmLeftLayer: React.FC<LayerRenderProps> = ({
       id="layer-arm-left"
       className="character-layer layer-arm-left"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -159,7 +157,6 @@ export const LegRightLayer: React.FC<LayerRenderProps> = ({
       id="layer-leg-right"
       className="character-layer layer-leg-right"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -186,7 +183,6 @@ export const BodyLayer: React.FC<LayerRenderProps> = ({
       id="layer-body"
       className="character-layer layer-body"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -213,7 +209,6 @@ export const ArmRightLayer: React.FC<LayerRenderProps> = ({
       id="layer-arm-right"
       className="character-layer layer-arm-right"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -240,7 +235,6 @@ export const HeadLayer: React.FC<LayerRenderProps> = ({
       id="layer-head"
       className="character-layer layer-head"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -293,7 +287,6 @@ export const EyebrowsLayer: React.FC<LayerRenderProps> = ({
       id="layer-eyebrows"
       className="character-layer layer-eyebrows"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -320,7 +313,6 @@ export const EyesLayer: React.FC<LayerRenderProps> = ({
       id="layer-eyes"
       className="character-layer layer-eyes"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (
@@ -347,7 +339,6 @@ export const MouthLayer: React.FC<LayerRenderProps> = ({
       id="layer-mouth"
       className="character-layer layer-mouth"
       transform={transform}
-      style={{ transformOrigin: `${anchor.x}px ${anchor.y}px` }}
     >
       {customContent}
       {showDevRig && (

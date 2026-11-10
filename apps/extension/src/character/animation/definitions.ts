@@ -148,10 +148,10 @@ export const buildWavingTimeline: AnimationTimelineBuilder = (ctx: AnimationBuil
     return tl;
   }
 
-  // Lift arm to greeting height
+  // Lift arm to greeting height beside head around shoulder pivot (130, 135)
   if (targets.armRight) {
     tl.to(targets.armRight, {
-      rotation: 52,
+      rotation: -128,
       duration: 0.38,
       ease: MOTION_EASINGS.backOut,
     });
@@ -171,13 +171,13 @@ export const buildWavingTimeline: AnimationTimelineBuilder = (ctx: AnimationBuil
     );
   }
 
-  // Perform 3 oscillating waves
+  // Perform lateral wave oscillations
   if (targets.armRight) {
-    tl.to(targets.armRight, { rotation: 32, duration: 0.18, ease: MOTION_EASINGS.smooth })
-      .to(targets.armRight, { rotation: 54, duration: 0.18, ease: MOTION_EASINGS.smooth })
-      .to(targets.armRight, { rotation: 32, duration: 0.18, ease: MOTION_EASINGS.smooth })
-      .to(targets.armRight, { rotation: 54, duration: 0.18, ease: MOTION_EASINGS.smooth })
-      .to(targets.armRight, { rotation: 40, duration: 0.22, ease: MOTION_EASINGS.smooth });
+    tl.to(targets.armRight, { rotation: -108, duration: 0.18, ease: MOTION_EASINGS.smooth })
+      .to(targets.armRight, { rotation: -134, duration: 0.18, ease: MOTION_EASINGS.smooth })
+      .to(targets.armRight, { rotation: -108, duration: 0.18, ease: MOTION_EASINGS.smooth })
+      .to(targets.armRight, { rotation: -134, duration: 0.18, ease: MOTION_EASINGS.smooth })
+      .to(targets.armRight, { rotation: -118, duration: 0.22, ease: MOTION_EASINGS.smooth });
   }
 
   // Head gently recenters
@@ -224,12 +224,12 @@ export const buildThinkingTimeline: AnimationTimelineBuilder = (ctx: AnimationBu
     );
   }
 
-  // Right arm elevates toward chin
+  // Right arm elevates clockwise around shoulder pivot (130, 135) toward chin
   if (targets.armRight) {
     tl.to(
       targets.armRight,
       {
-        rotation: -38,
+        rotation: 130,
         duration: 0.45,
         ease: MOTION_EASINGS.backOut,
       },
@@ -430,12 +430,12 @@ export const buildHappyTimeline: AnimationTimelineBuilder = (ctx: AnimationBuild
     });
   }
 
-  // Arms swing upward in celebration
+  // Arms swing upward in celebration around left (70, 135) & right (130, 135) shoulders
   if (targets.armLeft) {
     tl.to(
       targets.armLeft,
       {
-        rotation: -42,
+        rotation: 128,
         duration: 0.28,
         ease: MOTION_EASINGS.backOut,
       },
@@ -446,7 +446,7 @@ export const buildHappyTimeline: AnimationTimelineBuilder = (ctx: AnimationBuild
     tl.to(
       targets.armRight,
       {
-        rotation: 45,
+        rotation: -128,
         duration: 0.28,
         ease: MOTION_EASINGS.backOut,
       },
