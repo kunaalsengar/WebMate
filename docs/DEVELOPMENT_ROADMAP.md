@@ -104,12 +104,13 @@ This roadmap defines the sequential phased delivery plan for the WebMate project
   - [x] Validate production build successfully with clean JSX registry compilation.
   - [x] Pass all four manual motion checks: waving, thinking, automatic organic blinking, and reduced-motion behavior.
   - [x] Disable developer wireframe guides by default (`showDevRig: false`) while preserving debugging diagnostics.
-- [ ] **Step 2A: Interactive Gestures & Dynamic Pointing** (Pending Manual Verification):
+- [x] **Step 2A: Interactive Gestures & Dynamic Pointing** (Completed):
   - [x] Implement pure viewport target resolution & anatomical arm/head/torso/gaze pose solver (`pointingGeometry.ts`).
   - [x] Implement isolated GSAP pointing timelines & reduced-motion static poses preserving eye blink and speech mouth drivers (`pointingMotion.ts`).
   - [x] Extend `AnimationLifecycleManager`, `CharacterAnimationController`, and `CharacterRig` with `PointingAnimationDriver`, drag pause/recalibration, and passive rAF-throttled scroll/resize tracking.
   - [x] Integrate `pointingTarget`, `pointAt`, and `stopPointing` into `useCompanionStore`, `FloatingCompanion`, and isolated-world runtime API (`window.__WEBMATE__`).
-  - [ ] Manual browser verification across 360° target directions, DOM elements/`DOMRect`, scroll/resize tracking, drag/dock transitions, state overrides, and `prefers-reduced-motion`.
+  - [x] Correct GSAP `svgOrigin`/`transformOrigin` pivot conflict, facial/arm transform synchronization, and anatomical pose articulation so pointing visibly extends toward viewport targets (`918dc9e`).
+  - [x] Pass production extension build and manual browser verification confirming visible dynamic pointing toward webpage elements across 360° target directions, DOM elements/`DOMRect`, scroll/resize tracking, drag/dock transitions, state overrides, and `prefers-reduced-motion`.
 - [ ] **Step 2B: Character Asset Customization Interface**:
   - [ ] Provide character asset customization interface for local asset substitution.
 

@@ -1,10 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { CHARACTER_RIG_SCALE } from '@webmate/shared';
 import { CharacterRig } from '../character/CharacterRig';
 import type { PointingAnimationDriver, PointingTarget } from '../character/animation';
 import { characterArtworkRegistry } from '../character/artwork';
-import { buildMergedArtworkRegistry } from '../character/customization';
+import { ChatDrawer } from '../character/chat';
+import {
+  buildMergedArtworkRegistry,
+  getCustomizedCanonicalLayerIds,
+} from '../character/customization';
 import { CompanionPlaceholder } from './CompanionPlaceholder';
-import { CHARACTER_RIG_SCALE } from '@webmate/shared';
+import { LayerCustomizationDrawer } from './customizer';
 import { useCustomCharacterAssetsSync } from './customizationSync';
 import { useCompanionStore, type CompanionState } from './store';
 import { useDraggable } from './useDraggable';
@@ -40,9 +45,12 @@ declare global {
  */
 export const FloatingCompanion: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mascotButtonRef = useRef<HTMLButtonElement>(null);
+  const customizeButtonRef = useRef<HTMLButtonElement>(null);
   const pointingDriverRef = useRef<PointingAnimationDriver | null>(null);
   const { position, isDragging, isInitialized, dragProps } = useDraggable();
   useCustomCharacterAssetsSync();
+
   const characterExpression = useCompanionStore(
     (state: CompanionState) => state.characterExpression
   );
@@ -51,12 +59,50 @@ export const FloatingCompanion: React.FC = () => {
   );
   const showDevRig = useCompanionStore((state: CompanionState) => state.showDevRig);
   const pointingTarget = useCompanionStore((state: CompanionState) => state.pointingTarget);
-  const customLayers = useCompanionStore((state: CompanionState) => state.customLayers);
+  const avatarCustomization = useCompanionStore(
+    (state: CompanionState) => state.avatarCustomization
+  );
+  const isCustomizerOpen = useCompanionStore((state: CompanionState) => state.isCustomizerOpen);
+  const draftAvatarCustomization = useCompanionStore(
+    (state: CompanionState) => state.draftAvatarCustomization
+  );
+  const openCustomizer = useCompanionStore((state: CompanionState) => state.openCustomizer);
+  const closeCustomizer = useCompanionStore((state: CompanionState) => state.closeCustomizer);
+  const isChatOpen = useCompanionStore((state: CompanionState) => state.isChatOpen);
+  const toggleChat = useCompanionStore((state: CompanionState) => state.toggleChat);
+  const closeChat = useCompanionStore((state: CompanionState) => state.closeChat);
+  const messages = useCompanionStore((state: CompanionState) => state.messages);
+  const isGenerating = useCompanionStore((state: CompanionState) => state.isGenerating);
+  const addUserMessage = useCompanionStore((state: CompanionState) => state.addUserMessage);
+  const clearConversation = useCompanionStore(
+    (state: CompanionState) => state.clearConversation
+  );
+
+  const effectiveCustomization = useMemo(
+    () =>
+      isCustomizerOpen && draftAvatarCustomization !== null
+        ? draftAvatarCustomization
+        : avatarCustomization,
+    [isCustomizerOpen, draftAvatarCustomization, avatarCustomization]
+  );
+
+  const customLayerCount = useMemo(
+    () => getCustomizedCanonicalLayerIds(effectiveCustomization).length,
+    [effectiveCustomization]
+  );
 
   const assetRegistry = useMemo(
-    () => buildMergedArtworkRegistry(customLayers, characterArtworkRegistry),
-    [customLayers]
+    () => buildMergedArtworkRegistry(effectiveCustomization, characterArtworkRegistry),
+    [effectiveCustomization]
   );
+
+  const handleToggleCustomizer = useCallback(() => {
+    if (isCustomizerOpen) {
+      closeCustomizer();
+    } else {
+      openCustomizer();
+    }
+  }, [closeCustomizer, isCustomizerOpen, openCustomizer]);
 
   const handlePointingDriverReady = useCallback((driver: PointingAnimationDriver) => {
     pointingDriverRef.current = driver;
@@ -90,48 +136,100 @@ export const FloatingCompanion: React.FC = () => {
   }, []);
 
   return (
-    <div
-      id="webmate-floating-container"
-      ref={containerRef}
-      {...dragProps}
-      role="region"
-      aria-label="WebMate Floating Companion"
-      style={{
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-        transition: isDragging
-          ? 'none'
-          : 'transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1)',
-        cursor: isDragging ? 'grabbing' : 'grab',
-        touchAction: 'none',
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-        opacity: isInitialized ? 1 : 0,
-        pointerEvents: 'auto',
-        zIndex: 2147483647,
-        willChange: isDragging ? 'transform' : 'auto',
-      }}
-    >
-      <div className="webmate-companion-composite flex flex-col items-center">
-        {/* Transparent Articulated Mascot Character Rig */}
-        <CharacterRig
-          expression={characterExpression}
-          animationState={characterAnimationState}
-          scale={CHARACTER_RIG_SCALE}
-          showDevRig={showDevRig}
-          isDragging={isDragging}
-          pointingTarget={pointingTarget}
-          companionPosition={position}
-          onPointingDriverReady={handlePointingDriverReady}
-          onPointingStop={handlePointingStop}
-          assetRegistry={assetRegistry}
-        />
-        {/* Existing Navy-and-White Companion Badge */}
-        <CompanionPlaceholder isDragging={isDragging} />
+    <>
+      <div
+        id="webmate-floating-container"
+        ref={containerRef}
+        {...dragProps}
+        role="region"
+        aria-label="WebMate Floating Companion"
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+          transition: isDragging
+            ? 'none'
+            : 'transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1)',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          opacity: isInitialized ? 1 : 0,
+          pointerEvents: 'auto',
+          zIndex: 2147483647,
+          willChange: isDragging ? 'transform' : 'auto',
+        }}
+      >
+        <div className="webmate-companion-composite flex flex-col items-center">
+          {/* Interactive Mascot Trigger (toggles Chat Drawer cleanly without colliding with drag) */}
+          <button
+            ref={mascotButtonRef}
+            type="button"
+            className={`webmate-mascot-trigger ${isChatOpen ? 'is-chat-open' : ''} ${
+              isDragging ? 'is-dragging' : ''
+            }`}
+            draggable={false}
+            aria-expanded={isChatOpen}
+            aria-controls="webmate-chat-drawer"
+            aria-label={isChatOpen ? 'Close WebMate chat' : 'Open WebMate chat'}
+            title={isChatOpen ? 'Close WebMate chat' : 'Chat with WebMate'}
+            onClick={toggleChat}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape' && isChatOpen) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeChat();
+              }
+            }}
+          >
+            {/* Transparent Articulated Mascot Character Rig */}
+            <CharacterRig
+              expression={characterExpression}
+              animationState={characterAnimationState}
+              scale={CHARACTER_RIG_SCALE}
+              showDevRig={showDevRig}
+              isDragging={isDragging}
+              pointingTarget={pointingTarget}
+              companionPosition={position}
+              onPointingDriverReady={handlePointingDriverReady}
+              onPointingStop={handlePointingStop}
+              assetRegistry={assetRegistry}
+            />
+          </button>
+          {/* Navy-and-White Companion Badge */}
+          <CompanionPlaceholder
+            isDragging={isDragging}
+            isCustomizerOpen={isCustomizerOpen}
+            customLayerCount={customLayerCount}
+            onToggleCustomizer={handleToggleCustomizer}
+            customizeButtonRef={customizeButtonRef}
+          />
+        </div>
       </div>
-    </div>
+
+      {/* Shadow DOM Built-in Avatar Studio Interface */}
+      <LayerCustomizationDrawer
+        dockSide={position.dockSide}
+        assetRegistry={assetRegistry}
+        customizeButtonRef={customizeButtonRef}
+      />
+
+      {/* Shadow DOM Conversational Chat Drawer */}
+      <ChatDrawer
+        isOpen={isChatOpen}
+        onClose={closeChat}
+        messages={messages}
+        isGenerating={isGenerating}
+        onSendMessage={addUserMessage}
+        onNewConversation={clearConversation}
+        companionPosition={position}
+        isDragging={isDragging}
+        isAvatarStudioOpen={isCustomizerOpen}
+        assetRegistry={assetRegistry}
+        restoreFocusRef={mascotButtonRef}
+      />
+    </>
   );
 };
 

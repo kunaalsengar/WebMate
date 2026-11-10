@@ -54,7 +54,6 @@
 
 /**
  * Draggable Floating Container
- * Re-enables pointer events specifically for the companion card.
  */
 #webmate-floating-container {
   pointer-events: auto;
@@ -71,3 +70,1765 @@
   box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.5), 0 10px 12px -6px rgba(0, 0, 0, 0.35);
 }
 
+/**
+ * Companion Card Trigger Button (inside #webmate-companion-card)
+ */
+.webmate-customize-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid #334155;
+  background-color: #1E293B;
+  color: #E2E8F0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.webmate-customize-trigger:hover {
+  background-color: #334155;
+  border-color: #475569;
+  color: #FFFFFF;
+}
+
+.webmate-customize-trigger.is-open {
+  background-color: #2563EB;
+  border-color: #3B82F6;
+  color: #FFFFFF;
+}
+
+.webmate-customize-trigger:focus-visible {
+  outline: 2px solid #60A5FA;
+  outline-offset: 2px;
+}
+
+@keyframes webmatePanelEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Shadow DOM WebMate Avatar Studio Panel
+ * Uses explicit px units throughout so host page root font-size overrides never distort layout.
+ */
+#webmate-customizer-panel,
+.webmate-customizer-panel {
+  position: fixed;
+  bottom: 16px;
+  width: min(680px, calc(100vw - 292px));
+  max-height: min(668px, calc(100vh - 32px));
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 2147483647;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #CBD5E1;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px -12px rgba(15, 23, 42, 0.32),
+    0 12px 24px -8px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  animation: webmatePanelEnter 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+#webmate-customizer-panel.anchor-left {
+  left: 16px;
+  right: auto;
+}
+
+#webmate-customizer-panel.anchor-right {
+  right: 16px;
+  left: auto;
+}
+
+#webmate-customizer-panel button,
+#webmate-customizer-panel input,
+#webmate-customizer-panel select {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+#webmate-customizer-panel button:focus-visible,
+#webmate-customizer-panel input:focus-visible,
+#webmate-customizer-panel select:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* Header */
+.webmate-customizer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border-bottom: 1px solid #1E293B;
+  flex-shrink: 0;
+}
+
+.webmate-customizer-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.webmate-customizer-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: #2563EB;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.webmate-customizer-title-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.webmate-customizer-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.webmate-customizer-subtitle {
+  font-size: 11px;
+  line-height: 1.3;
+  color: #93C5FD;
+  font-weight: 500;
+}
+
+.webmate-customizer-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background-color: #1E293B;
+  color: #E2E8F0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.webmate-customizer-close-btn:hover {
+  background-color: #334155;
+  border-color: #475569;
+  color: #FFFFFF;
+}
+
+/* Integrity Banners & Unsaved Close Prompt */
+.webmate-customizer-banners {
+  padding: 10px 16px 0;
+  background-color: #F8FAFC;
+  flex-shrink: 0;
+}
+
+.webmate-banner {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.webmate-banner.is-error {
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.webmate-banner.is-warning {
+  background-color: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+}
+
+.webmate-close-confirm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 10px 16px;
+  background-color: #EFF6FF;
+  border-bottom: 1px solid #BFDBFE;
+  color: #1E3A8A;
+  flex-shrink: 0;
+}
+
+.webmate-close-confirm-text {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.webmate-close-confirm-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Workspace Body */
+.webmate-customizer-body {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.webmate-customizer-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background-color: #F8FAFC;
+  border-right: 1px solid #E2E8F0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+.webmate-customizer-main {
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
+  background-color: #FFFFFF;
+}
+
+/* Embedded Live Preview Card */
+.webmate-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.webmate-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.webmate-preview-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+}
+
+.webmate-preview-pill {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 2px 7px;
+  border-radius: 9999px;
+}
+
+.webmate-preview-pill.is-default {
+  background-color: #F1F5F9;
+  color: #475569;
+}
+
+.webmate-preview-pill.is-custom {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.webmate-preview-pill.is-unsaved {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.webmate-preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 6px;
+  border-radius: 8px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+
+.webmate-preview-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.webmate-preview-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 112px;
+}
+
+.webmate-preview-control-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.webmate-preview-select {
+  width: 100%;
+  height: 28px;
+  padding: 0 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #0F172A;
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.webmate-anchors-toggle {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1;
+  background-color: #FFFFFF;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.webmate-anchors-toggle:hover {
+  background-color: #F1F5F9;
+}
+
+.webmate-anchors-toggle.is-active {
+  background-color: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+}
+
+/* Category Navigation Sidebar */
+.webmate-layer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.webmate-layer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.webmate-layer-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748B;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+.webmate-layer-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.webmate-layer-item {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: #1E293B;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.webmate-layer-item:hover {
+  background-color: #E2E8F0;
+}
+
+.webmate-layer-item.is-selected {
+  background-color: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+}
+
+.webmate-layer-item-name {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.webmate-layer-item-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.webmate-layer-dirty-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #F59E0B;
+}
+
+.webmate-layer-status-tag {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+.webmate-layer-status-tag.is-default {
+  background-color: #E2E8F0;
+  color: #475569;
+}
+
+.webmate-layer-item.is-selected .webmate-layer-status-tag.is-default {
+  background-color: #1E293B;
+  color: #CBD5E1;
+}
+
+.webmate-layer-status-tag.is-custom {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.webmate-layer-item.is-selected .webmate-layer-status-tag.is-custom {
+  background-color: #2563EB;
+  color: #FFFFFF;
+}
+
+/* Studio Editor Workspace */
+.webmate-editor-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.webmate-editor-layer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.webmate-editor-layer-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.webmate-editor-layer-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #0F172A;
+}
+
+.webmate-editor-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.webmate-editor-slot-pill {
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background-color: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+}
+
+.webmate-editor-layer-desc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.webmate-expression-note {
+  padding: 9px 11px;
+  border-radius: 9px;
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.webmate-expression-note-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.webmate-expression-note-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #1D4ED8;
+}
+
+.webmate-preview-quick-moods {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.webmate-quick-mood-btn {
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #93C5FD;
+  background-color: #FFFFFF;
+  color: #1D4ED8;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.webmate-quick-mood-btn:hover {
+  background-color: #DBEAFE;
+  border-color: #60A5FA;
+}
+
+.webmate-expression-note-text {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #1E3A8A;
+}
+
+/* Section Headers & Links */
+.webmate-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.webmate-section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.webmate-section-heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+}
+
+.webmate-swatch-active-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1D4ED8;
+}
+
+.webmate-link-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #2563EB;
+  cursor: pointer;
+}
+
+.webmate-link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.webmate-link-btn:disabled {
+  color: #94A3B8;
+  cursor: not-allowed;
+}
+
+/* Symmetrical Limb Toggle */
+.webmate-limb-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.webmate-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.webmate-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.webmate-limb-diff-hint {
+  margin: 0;
+  font-size: 11px;
+  color: #B45309;
+  font-weight: 500;
+}
+
+.webmate-segmented {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 2px;
+  border-radius: 8px;
+  background-color: #E2E8F0;
+  gap: 2px;
+}
+
+.webmate-segment-btn {
+  min-height: 28px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #334155;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.webmate-segment-btn.is-selected {
+  background-color: #0F172A;
+  color: #FFFFFF;
+}
+
+/* Contextual Color Swatch Row */
+.webmate-swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.webmate-swatch-btn {
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-color: #F8FAFC;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.webmate-swatch-btn:hover {
+  transform: scale(1.06);
+  border-color: #94A3B8;
+}
+
+.webmate-swatch-btn.is-selected {
+  border-color: #2563EB;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.22);
+}
+
+.webmate-swatch-chip {
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  border: 1px solid rgba(15, 23, 42, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.webmate-swatch-auto-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Snapchat/Bitmoji-Style Thumbnail Card Grid */
+.webmate-studio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.webmate-studio-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 7px;
+  border-radius: 10px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background-color 0.14s ease, box-shadow 0.14s ease, transform 0.12s ease;
+}
+
+.webmate-studio-card:hover {
+  border-color: #94A3B8;
+  background-color: #F8FAFC;
+}
+
+.webmate-studio-card.is-selected {
+  border-color: #2563EB;
+  background-color: #EFF6FF;
+  box-shadow: 0 0 0 1px #2563EB;
+}
+
+.webmate-check-pill {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background-color: #2563EB;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.22);
+  z-index: 1;
+}
+
+.webmate-thumb-stage {
+  width: 100%;
+  height: 76px;
+  border-radius: 7px;
+  background-color: #F8FAFC;
+  border: 1px solid #F1F5F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: hidden;
+}
+
+.webmate-studio-card.is-selected .webmate-thumb-stage {
+  background-color: #FFFFFF;
+  border-color: #DBEAFE;
+}
+
+.webmate-thumb-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.webmate-studio-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+}
+
+.webmate-studio-card-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #0F172A;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.webmate-studio-card-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  background-color: #E2E8F0;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.webmate-studio-card.is-selected .webmate-studio-card-badge {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+/* Shared Action Buttons */
+.webmate-btn-primary,
+.webmate-btn-secondary,
+.webmate-btn-ghost-danger {
+  min-height: 32px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.webmate-btn-compact {
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+}
+
+.webmate-btn-primary {
+  background-color: #2563EB;
+  border: 1px solid #1D4ED8;
+  color: #FFFFFF;
+}
+
+.webmate-btn-primary:hover:not(:disabled) {
+  background-color: #1D4ED8;
+}
+
+.webmate-btn-secondary {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+}
+
+.webmate-btn-secondary:hover:not(:disabled) {
+  background-color: #F1F5F9;
+  border-color: #94A3B8;
+}
+
+.webmate-btn-ghost-danger {
+  background-color: transparent;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+}
+
+.webmate-btn-ghost-danger:hover:not(:disabled) {
+  background-color: #FEF2F2;
+  border-color: #FCA5A5;
+}
+
+.webmate-btn-primary:disabled,
+.webmate-btn-secondary:disabled,
+.webmate-btn-ghost-danger:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.webmate-customizer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 10px 16px;
+  background-color: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.webmate-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.webmate-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.webmate-save-status {
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.webmate-status-text {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.webmate-status-text.is-unsaved {
+  color: #B45309;
+}
+
+.webmate-status-text.is-success {
+  color: #047857;
+}
+
+.webmate-status-text.is-error {
+  color: #B91C1C;
+}
+
+/**
+ * Responsive Breakpoints:
+ * - <= 899px (covers 768px tablet cleanly alongside docked mascot without overlap)
+ * - <= 719px (covers 430px, 375px, 320px mobile viewports cleanly)
+ */
+@media (max-width: 899px) {
+  #webmate-customizer-panel,
+  .webmate-customizer-panel {
+    width: min(468px, calc(100vw - 284px));
+    max-height: calc(100vh - 32px);
+  }
+
+  .webmate-customizer-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .webmate-customizer-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #E2E8F0;
+    overflow: visible;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .webmate-preview-stage {
+    min-height: 126px;
+  }
+
+  /* Compact horizontal category strip on tablet/mobile so option cards appear immediately above fold */
+  .webmate-layer-list {
+    flex-direction: row;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .webmate-layer-group {
+    flex-shrink: 0;
+  }
+
+  .webmate-layer-group-items {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .webmate-layer-item {
+    width: auto;
+    flex-shrink: 0;
+    background-color: #FFFFFF;
+    border-color: #E2E8F0;
+  }
+
+  .webmate-customizer-main {
+    overflow: visible;
+    padding: 12px;
+  }
+
+  .webmate-studio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 719px) {
+  #webmate-customizer-panel,
+  .webmate-customizer-panel,
+  #webmate-customizer-panel.anchor-left,
+  #webmate-customizer-panel.anchor-right {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    max-height: calc(100vh - 20px);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .webmate-customizer-header {
+    padding: 10px 12px;
+  }
+
+  .webmate-customizer-footer {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .webmate-footer-left {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .webmate-footer-right {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .webmate-save-status {
+    max-width: 100%;
+  }
+
+  .webmate-status-text {
+    white-space: normal;
+  }
+
+  .webmate-btn-primary,
+  .webmate-btn-secondary,
+  .webmate-btn-ghost-danger {
+    min-height: 36px;
+  }
+
+  .webmate-field-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .webmate-segmented {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .webmate-studio-grid {
+    gap: 8px;
+  }
+
+  .webmate-thumb-stage {
+    height: 68px;
+  }
+}
+
+/**
+ * Interactive Mascot Chat Trigger Wrapper (preserves exact 130x163px CharacterRig bounds)
+ */
+.webmate-mascot-trigger {
+  display: block;
+  width: 130px;
+  height: 163px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: visible;
+  border-radius: 14px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.webmate-mascot-trigger:hover {
+  transform: translateY(-1px);
+}
+
+.webmate-mascot-trigger.is-dragging {
+  cursor: grabbing;
+  transform: none;
+}
+
+.webmate-mascot-trigger:focus-visible {
+  outline: 2px solid #0F172A;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.88);
+}
+
+/**
+ * WebMate Conversational AI Chat Drawer (Phase 3 Step 3.1 Foundation)
+ * Strict monochrome slate identity (#0F172A, #1E293B, #FFFFFF, #F8FAFC, #64748B)
+ * with explicit px units for Shadow DOM host-font isolation.
+ */
+#webmate-chat-drawer,
+.webmate-chat-drawer {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 48px -12px rgba(15, 23, 42, 0.22),
+    0 10px 24px -8px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  transition:
+    left 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    top 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    width 0.2s cubic-bezier(0.2, 0.9, 0.3, 1),
+    height 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+  animation: webmatePanelEnter 0.18s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+#webmate-chat-drawer.is-repositioning {
+  transition: none;
+}
+
+#webmate-chat-drawer button,
+#webmate-chat-drawer textarea {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+#webmate-chat-drawer button:focus-visible {
+  outline: 2px solid #0F172A;
+  outline-offset: 2px;
+}
+
+/* Chat Header */
+.webmate-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 16px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.webmate-chat-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.webmate-chat-brand-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background-color: #0F172A;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.webmate-chat-brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.webmate-chat-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.webmate-chat-subtitle {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.webmate-chat-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.webmate-chat-header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid #E2E8F0;
+  background-color: #F8FAFC;
+  color: #1E293B;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.webmate-chat-header-btn:hover {
+  background-color: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+.webmate-chat-new-btn {
+  padding: 0 10px;
+}
+
+.webmate-chat-close-btn {
+  width: 32px;
+  padding: 0;
+  background-color: #FFFFFF;
+}
+
+/* Scrollable Conversation / Message Area */
+.webmate-chat-message-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #FFFFFF;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+@keyframes webmateMessageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.webmate-chat-messages-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.webmate-chat-message {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  animation: webmateMessageEnter 0.16s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.webmate-chat-message.is-user {
+  justify-content: flex-end;
+}
+
+.webmate-chat-message.is-assistant {
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.webmate-chat-message-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background-color: #0F172A;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.webmate-chat-message-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.webmate-chat-message.is-user .webmate-chat-message-column {
+  align-items: flex-end;
+  max-width: 84%;
+}
+
+.webmate-chat-message.is-assistant .webmate-chat-message-column {
+  align-items: flex-start;
+  max-width: calc(100% - 36px);
+}
+
+.webmate-chat-message-bubble {
+  max-width: 100%;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.webmate-chat-message.is-user .webmate-chat-message-bubble {
+  background-color: #0F172A;
+  color: #FFFFFF;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.webmate-chat-message.is-assistant .webmate-chat-message-bubble {
+  background-color: #F8FAFC;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px 16px 16px 4px;
+}
+
+.webmate-chat-message.is-error .webmate-chat-message-bubble {
+  border-color: #64748B;
+}
+
+.webmate-chat-message-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: #64748B;
+}
+
+.webmate-chat-message-sender {
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.webmate-chat-message-time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Empty Welcome State */
+.webmate-chat-welcome {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.webmate-chat-welcome-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.webmate-chat-welcome-mascot {
+  width: 96px;
+  height: 112px;
+  border-radius: 20px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.webmate-chat-welcome-heading {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #0F172A;
+}
+
+.webmate-chat-welcome-desc {
+  margin: 0;
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #64748B;
+}
+
+.webmate-chat-welcome-prompts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.webmate-chat-prompt-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+  padding: 11px;
+  border-radius: 13px;
+  border: 1px solid #E2E8F0;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.12s ease, box-shadow 0.14s ease;
+}
+
+.webmate-chat-prompt-card:hover {
+  background-color: #FFFFFF;
+  border-color: #1E293B;
+  box-shadow: 0 4px 12px -4px rgba(15, 23, 42, 0.1);
+}
+
+.webmate-chat-prompt-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.webmate-chat-prompt-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.webmate-chat-prompt-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #0F172A;
+}
+
+.webmate-chat-prompt-desc {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #64748B;
+}
+
+/* Composer Area */
+.webmate-chat-composer-wrapper {
+  padding: 12px 14px 14px;
+  background-color: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  flex-shrink: 0;
+}
+
+.webmate-chat-composer-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px 8px 12px;
+  border-radius: 14px;
+  border: 1px solid #CBD5E1;
+  background-color: #F8FAFC;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.webmate-chat-composer-shell:focus-within {
+  background-color: #FFFFFF;
+  border-color: #0F172A;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+}
+
+.webmate-chat-composer-input {
+  width: 100%;
+  min-height: 24px;
+  max-height: 120px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: #0F172A;
+  font-size: 13.5px;
+  line-height: 1.45;
+  resize: none;
+  overflow-y: auto;
+  outline: none;
+}
+
+.webmate-chat-composer-input::placeholder {
+  color: #64748B;
+}
+
+.webmate-chat-composer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.webmate-chat-composer-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.webmate-chat-attach-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: #64748B;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  cursor: not-allowed;
+  flex-shrink: 0;
+}
+
+.webmate-chat-composer-hint {
+  font-size: 11px;
+  line-height: 1.2;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.webmate-chat-send-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 9px;
+  border: 1px solid #CBD5E1;
+  background-color: #E2E8F0;
+  color: #64748B;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: not-allowed;
+  flex-shrink: 0;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+.webmate-chat-send-btn.is-ready {
+  background-color: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+  cursor: pointer;
+}
+
+.webmate-chat-send-btn.is-ready:hover {
+  background-color: #1E293B;
+  border-color: #1E293B;
+}
+
+/* Compact & Short Layout Adaptation */
+.webmate-chat-drawer.is-compact .webmate-chat-welcome-prompts {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.webmate-chat-drawer.is-compact .webmate-chat-message.is-user .webmate-chat-message-column {
+  max-width: 88%;
+}
+
+.webmate-chat-drawer.is-compact .webmate-chat-message-bubble {
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.webmate-chat-drawer.is-compact .webmate-chat-composer-hint {
+  display: none;
+}
+
+.webmate-chat-drawer.is-compact .webmate-chat-new-btn-label {
+  display: none;
+}
+
+.webmate-chat-drawer.is-compact .webmate-chat-new-btn {
+  width: 32px;
+  padding: 0;
+}
+
+.webmate-chat-drawer.is-short .webmate-chat-message-list {
+  padding: 12px 14px;
+}
+
+.webmate-chat-drawer.is-short .webmate-chat-messages-stack {
+  gap: 11px;
+}
+
+.webmate-chat-drawer.is-short .webmate-chat-welcome {
+  margin: 0;
+  gap: 12px;
+}
+
+.webmate-chat-drawer.is-short .webmate-chat-welcome-mascot {
+  width: 78px;
+  height: 92px;
+  border-radius: 16px;
+}
+
+.webmate-chat-drawer.is-short .webmate-chat-welcome-heading {
+  font-size: 16px;
+}
+
+@media (max-width: 420px) {
+  .webmate-chat-header {
+    padding: 11px 12px;
+  }
+
+  .webmate-chat-message-list {
+    padding: 14px 12px;
+  }
+
+  .webmate-chat-message.is-user .webmate-chat-message-column {
+    max-width: 88%;
+  }
+
+  .webmate-chat-welcome-prompts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .webmate-chat-composer-wrapper {
+    padding: 10px 12px 12px;
+  }
+
+  .webmate-chat-composer-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #webmate-customizer-panel,
+  .webmate-customizer-panel,
+  #webmate-chat-drawer,
+  .webmate-chat-drawer,
+  .webmate-chat-message {
+    animation: none;
+    transition: none;
+  }
+
+  .webmate-mascot-trigger,
+  .webmate-customize-trigger,
+  .webmate-customizer-close-btn,
+  .webmate-anchors-toggle,
+  .webmate-layer-item,
+  .webmate-swatch-btn,
+  .webmate-studio-card,
+  .webmate-segment-btn,
+  .webmate-btn-primary,
+  .webmate-btn-secondary,
+  .webmate-btn-ghost-danger,
+  .webmate-chat-header-btn,
+  .webmate-chat-prompt-card,
+  .webmate-chat-composer-shell,
+  .webmate-chat-send-btn {
+    transition: none;
+  }
+}

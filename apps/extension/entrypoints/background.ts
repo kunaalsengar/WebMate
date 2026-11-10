@@ -1,3 +1,4 @@
+import { browser, type Runtime } from 'wxt/browser';
 import { defineBackground } from 'wxt/sandbox';
 
 /**
@@ -10,7 +11,7 @@ export default defineBackground(() => {
   console.log('[WebMate] Background service worker initialized (Phase 0).');
 
   // Listen for extension installation or update
-  browser.runtime.onInstalled.addListener((details) => {
+  browser.runtime.onInstalled.addListener((details: Runtime.OnInstalledDetailsType) => {
     console.log('[WebMate] Extension installed/updated:', details.reason);
   });
 });

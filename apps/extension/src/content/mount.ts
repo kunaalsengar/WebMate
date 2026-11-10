@@ -1,14 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import type { ContentScriptContext, ShadowRootUi } from 'wxt/client';
-import { createShadowRootUi } from 'wxt/client';
+import {
+  createShadowRootUi,
+  type ContentScriptContext,
+  type ShadowRootContentScriptUi,
+} from 'wxt/client';
 import { FloatingCompanion } from './FloatingCompanion';
 
 /**
  * References to WebMate's own actively mounted instance and DOM nodes.
  * Used for strict instance tracking without querying or modifying host-owned DOM elements.
  */
-let activeUiInstance: ShadowRootUi | null = null;
+let activeUiInstance: ShadowRootContentScriptUi<ReactDOM.Root> | null = null;
 let activeHostElement: HTMLElement | null = null;
 let activeReactRoot: ReactDOM.Root | null = null;
 
@@ -73,7 +76,9 @@ export function isAlreadyMounted(): boolean {
  * - Encapsulates React inside an open Shadow Root.
  * - Connects lifecycle hooks to WXT ContentScriptContext for safe teardown.
  */
-export async function mountWebMate(ctx: ContentScriptContext): Promise<ShadowRootUi | null> {
+export async function mountWebMate(
+  ctx: ContentScriptContext
+): Promise<ShadowRootContentScriptUi<ReactDOM.Root> | null> {
   // 1. Guard against unsupported URLs and non-HTML documents
   if (!isSupportedPage()) {
     console.debug('[WebMate] Current URL is not a supported HTTP/HTTPS webpage. Skipping mount.');
@@ -93,7 +98,7 @@ export async function mountWebMate(ctx: ContentScriptContext): Promise<ShadowRoo
 
   try {
     // 3. Create isolated Shadow Root UI using WXT client framework
-    const ui = await createShadowRootUi(ctx, {
+    const ui = await createShadowRootUi<ReactDOM.Root>(ctx, {
       name: 'webmate-root',
       position: 'inline',
       anchor: 'body',
