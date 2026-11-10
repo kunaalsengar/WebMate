@@ -62,7 +62,7 @@ function getStorageOnChangedEvent(): StorageOnChangedEventLike | null {
 }
 
 /**
- * Starts live synchronization for custom character SVG assets:
+ * Starts live synchronization for built-in avatar customization selections:
  * 1. Registers the local storage.onChanged listener BEFORE starting async hydration so
  *    updates committed mid-load are never missed.
  * 2. Uses latestSyncEpoch so slower in-flight initial reads cannot overwrite newer updates.
@@ -94,8 +94,8 @@ export function startCustomCharacterAssetsSync(): () => void {
         .getState()
         .setCustomAssetsError(
           error instanceof Error && error.message
-            ? `Failed to synchronize custom character assets: ${error.message}`
-            : 'Failed to synchronize custom character assets.'
+            ? `Failed to synchronize avatar customization: ${error.message}`
+            : 'Failed to synchronize avatar customization.'
         );
     }
   };
@@ -122,13 +122,13 @@ export function startCustomCharacterAssetsSync(): () => void {
       if (isDisposed || requestEpoch !== latestSyncEpoch) {
         return;
       }
-      console.warn('[WebMate] Failed to hydrate custom character assets:', error);
+      console.warn('[WebMate] Failed to hydrate avatar customization:', error);
       const store = useCompanionStore.getState();
       store.setCustomAssetsLoading(false);
       store.setCustomAssetsError(
         error instanceof Error && error.message
-          ? `Failed to load custom character assets: ${error.message}`
-          : 'Failed to load custom character assets from storage.'
+          ? `Failed to load avatar customization: ${error.message}`
+          : 'Failed to load avatar customization from storage.'
       );
     }
   })();
@@ -165,7 +165,7 @@ export async function refreshCustomCharacterAssets(): Promise<LoadCustomCharacte
 }
 
 /**
- * React lifecycle hook binding custom character asset hydration and cross-tab sync
+ * React lifecycle hook binding avatar customization hydration and cross-tab sync
  * to the mounted FloatingCompanion component.
  */
 export function useCustomCharacterAssetsSync(): void {
@@ -173,4 +173,3 @@ export function useCustomCharacterAssetsSync(): void {
     return startCustomCharacterAssetsSync();
   }, []);
 }
-

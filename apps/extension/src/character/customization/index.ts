@@ -1,9 +1,10 @@
 /**
- * WebMate Character Asset Customization Subsystem (SVG Security & Renderer Engine)
+ * WebMate Built-In Avatar Customization Subsystem
  */
 
 export * from './types';
-export * from './svgSanitizer';
-export * from './SafeSvgRenderer';
+export * from './palettes';
+export * from './catalog';
+export * from './variants';
+export * from './registryComposer';
 export * from './storage';
-

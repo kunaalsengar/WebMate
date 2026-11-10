@@ -12,7 +12,7 @@ WebMate is designed to run as a Chrome Extension Manifest V3 companion. It injec
 - **UI Engine**: React 18
 - **Styling**: Tailwind CSS 3.x
 - **State Management**: Zustand
-- **Animation Engine (Planned Phase 2)**: GSAP & CSS Keyframes
+- **Animation Engine**: GSAP 3 & Layered SVG Rig
 - **Extension Target**: Chrome Manifest V3 (Cross-browser portable via WXT)
 
 ## Project Structure
@@ -30,19 +30,22 @@ apps/extension/
 │       ├── App.tsx
 │       └── style.css
 ├── src/
-│   ├── character/                  # Asset-independent character rig foundation
+│   ├── character/                  # Character rig, animation engine & original SVG artwork
 │   │   ├── CharacterRig.tsx        # Transparent SVG rig container (viewBox: 0 0 200 250)
 │   │   ├── CharacterLayers.tsx     # Independent renderers for all 12 rig layer slots
 │   │   ├── expressions.config.ts   # Configuration for 8 canonical facial expressions
-│   │   └── types.ts                # Rig render interfaces & asset registry contracts
+│   │   ├── types.ts                # Rig render interfaces & asset registry contracts
+│   │   ├── index.ts                # Character subsystem exports
+│   │   ├── animation/              # GSAP controller, timelines, lifecycle & dynamic pointing
+│   │   └── artwork/                # Original 12-layer mascot SVG artwork components & registry
 │   └── content/
 │       ├── mount.ts                # Modular Shadow DOM mounting & idempotency manager
-│       ├── FloatingCompanion.tsx   # Draggable floating container with docking transitions
-│       ├── CompanionPlaceholder.tsx # Minimal navy-and-white companion placeholder
+│       ├── FloatingCompanion.tsx   # Draggable floating container, rig integration & runtime API
+│       ├── CompanionPlaceholder.tsx # Minimal navy-and-white companion card
 │       ├── useDraggable.ts         # Pointer events, pointer capture, rAF throttling hook
 │       ├── docking.ts              # Viewport clamping and horizontal edge docking algorithms
 │       ├── storage.ts              # Chrome Storage API (chrome.storage.local) persistence
-│       └── store.ts                # Zustand runtime state store for positioning and docking
+│       └── store.ts                # Zustand runtime state store (position, docking, pointing)
 ├── assets/
 │   └── character/                  # Manifests, layer slots, expression directories, and ingestion guides
 ├── package.json
@@ -65,17 +68,19 @@ Inside `apps/extension`:
 - `pnpm build` — Build extension for Chrome MV3.
 - `pnpm zip` — Package extension zip for Chrome Web Store distribution.
 
-## Current Status (Phase 2, Steps 1A & 1B Completed)
+## Current Status (Phase 2 – Steps 1A, 1B & 2A Completed)
 
-WebMate features a 100% original, fully articulated mascot companion powered by an asset-independent 12-layer SVG rig and GSAP procedural animation engine:
-- **Transparent Rig Renderer**: `CharacterRig.tsx` renders in SVG coordinate space (`0 0 200 250`) without background cards or color planes.
-- **12 Layer Slots**: Ground contact shadow, left/right legs, left/right arms, torso/body, head, blush, eyebrows, eyes, mouth, and emotional FX overlays.
-- **Original Mascot Artwork**: Premium original 2D vector artwork package (`apps/extension/src/character/artwork/`) adhering strictly to project IP and zero-copyright guidelines.
+WebMate's Chrome extension client features a 100% original, articulated mascot companion with Shadow DOM isolation, dragging/docking persistence, GSAP animation timelines, and dynamic 360° element pointing:
+- **Shadow DOM UI Isolation & Draggable Companion**: Singleton `<webmate-root>` content script mount on HTTP/HTTPS pages, GPU-accelerated `translate3d` dragging (mouse, touch, pen), horizontal edge docking with viewport clamping, and `chrome.storage.local` position persistence.
+- **Transparent 12-Layer SVG Rig**: `CharacterRig.tsx` renders in SVG coordinate space (`0 0 200 250`) across ground shadow, left/right legs, left/right arms, torso/body, head, blush, eyebrows, eyes, mouth, and emotional FX overlays without background cards behind the character.
+- **Original Mascot Vector Artwork**: 100% original 2D vector artwork package (`apps/extension/src/character/artwork/`) adhering strictly to project IP and zero-copyright guidelines, with developer wireframe guides (`showDevRig`) disabled by default.
 - **Expression Configurations**: Full typed configurations for 8 canonical expressions (`normal`, `happy`, `thinking`, `surprised`, `confused`, `explaining`, `talking`, `sleeping`).
-- **GSAP Animation Subsystem**: Procedural GSAP timelines (`idle`, `blinking`, `waving`, `thinking`, `explaining`, `talking`, `happy`, `sleeping`), lifecycle management, random organic eye blinking (3.5s–6.0s), drag pause/resume optimization, and full `prefers-reduced-motion` compliance.
-- **Stream-Triggered Speech Driver**: `TalkingAnimationDriver` lifecycle interface for event-driven mouth pacing on incoming tokens.
-- **Developer Diagnostics**: Optional wireframe preview (`showDevRig`, disabled by default in production) for anchor and slot alignment calibration.
+- **GSAP Animation Subsystem**: Procedural GSAP timelines (`idle`, `blinking`, `waving`, `thinking`, `explaining`, `talking`, `happy`, `sleeping`), lifecycle management, random organic eye blinking (3.5s–6.0s), drag pause/resume optimization, event-driven `TalkingAnimationDriver` hooks, and full `prefers-reduced-motion` compliance.
+- **Dynamic Character Pointing System (Step 2A)**: 360° viewport target resolution for `HTMLElement`s and `DOMRect`s (`pointingGeometry.ts`, `pointingMotion.ts`), true-pivot shoulder articulation, torso-coupled arm tracking, coordinated head/eye orientation, passive rAF-throttled scroll/resize updates, drag pause/recalibration, Zustand store controls (`pointingTarget`, `pointAt`, `stopPointing`), and isolated-world runtime API (`window.__WEBMATE__`).
 - **Licensing Clarity**: Open-source Apache-2.0 license covers the extension codebase, rig architecture, and animation engine; mascot character designs and vector assets represent original WebMate artwork.
 
-**Next Steps**:
-- Phase 2, Step 2: Interactive Gestures & Dynamic Pointing.
+**Upcoming Features (Planned)**:
+- Local character asset customization interface (Phase 2, Step 2B).
+- Conversational AI chat drawer and backend SSE streaming integration (Phase 3).
+- Element selection/explanation workflow and website/page analysis (Phase 4).
+- Guided website navigation walkthroughs (Phase 5).

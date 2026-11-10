@@ -3,7 +3,7 @@
 > **Interactive AI-Powered Browser Companion**
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Phase-0:_Project_Foundation-green.svg)](docs/DEVELOPMENT_ROADMAP.md)
+[![Status](https://img.shields.io/badge/Phase_2-Step_2A_Completed-green.svg)](docs/DEVELOPMENT_ROADMAP.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-yellow.svg)](https://developer.chrome.com/docs/extensions/mv3/)
 
@@ -11,13 +11,33 @@ WebMate is a Chrome browser extension and companion backend that brings an anima
 
 ---
 
-## Current Status: Phase 0 (Project Foundation)
+## Current Status: Phase 2 – Character & Interaction Foundation
 
-This repository is currently in **Phase 0**. The foundational monorepo workspace, TypeScript baseline, configuration files, and architectural documentation are fully initialized.
+WebMate is currently under active development.
 
-Interactive features (character UI, animations, AI chat, and website analysis) are **planned for subsequent phases** and are not yet active in this build.
+**Completed milestones:**
+- Phase 0: Project Foundation
+- Phase 1: Content Script Injection, Shadow DOM Isolation & Draggable Companion
+- Phase 2 – Step 1A: Original Cartoon Character Rig & Artwork
+- Phase 2 – Step 1B: Character Animation System
+- Phase 2 – Step 2A: Dynamic Character Pointing System
 
-See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md) for the active schedule and delivery plan.
+**Currently implemented:**
+- Floating cartoon companion on supported websites.
+- Shadow DOM-based UI isolation.
+- Draggable companion with edge docking and position persistence.
+- Original layered SVG character artwork.
+- GSAP-powered character animations.
+- Dynamic pointing toward webpage elements.
+- Reduced-motion accessibility support.
+
+**Upcoming features:**
+- Element selection and explanation workflow.
+- Website and page analysis.
+- Conversational AI chat.
+- Guided website navigation.
+
+See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md) for development progress and upcoming milestones.
 
 ---
 

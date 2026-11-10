@@ -46,6 +46,10 @@ export function useDraggable() {
     currentPos: { x: 0, y: 0 },
   });
 
+  const suppressClickRef = useRef(false);
+  const lastDragEndAtRef = useRef(0);
+  const suppressTimerRef = useRef<number | null>(null);
+
   const rafRef = useRef<number | null>(null);
 
   // 1. Initial Position Restoration from chrome.storage.local
@@ -155,8 +159,19 @@ export function useDraggable() {
         }
       }
 
-      // Step 5: If an actual drag was active, calculate final dock position, update store, and persist
+      // Step 5: If an actual drag was active, suppress any trailing click, dock, and persist
       if (wasDragging) {
+        suppressClickRef.current = true;
+        lastDragEndAtRef.current =
+          typeof performance !== 'undefined' ? performance.now() : Date.now();
+        if (suppressTimerRef.current !== null) {
+          window.clearTimeout(suppressTimerRef.current);
+        }
+        suppressTimerRef.current = window.setTimeout(() => {
+          suppressTimerRef.current = null;
+          suppressClickRef.current = false;
+        }, 180);
+
         const finalCoords = currentPos;
         const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
         const height = typeof window !== 'undefined' ? window.innerHeight : 800;
@@ -210,6 +225,12 @@ export function useDraggable() {
         rafRef.current = null;
       }
 
+      if (suppressTimerRef.current !== null) {
+        window.clearTimeout(suppressTimerRef.current);
+        suppressTimerRef.current = null;
+      }
+      suppressClickRef.current = false;
+
       // Release pointer capture safely if held during teardown
       const state = dragStateRef.current;
       if (state.capturedElement && state.pointerId !== null) {
@@ -241,6 +262,12 @@ export function useDraggable() {
       // Respond only to primary pointer and left-click / touch / pen
       if (!e.isPrimary) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+      suppressClickRef.current = false;
+      if (suppressTimerRef.current !== null) {
+        window.clearTimeout(suppressTimerRef.current);
+        suppressTimerRef.current = null;
+      }
 
       dragStateRef.current = {
         pointerId: e.pointerId,
@@ -346,6 +373,23 @@ export function useDraggable() {
     [finalizeDrag]
   );
 
+  // 11. Click Capture: Prevents trailing synthetic click events emitted right after a completed drag
+  const onClickCapture = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const withinDragSuppressionWindow =
+      suppressClickRef.current && now - lastDragEndAtRef.current < 250;
+
+    if (dragStateRef.current.isDragging || withinDragSuppressionWindow) {
+      suppressClickRef.current = false;
+      if (suppressTimerRef.current !== null) {
+        window.clearTimeout(suppressTimerRef.current);
+        suppressTimerRef.current = null;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+
   return {
     position,
     isDragging,
@@ -356,6 +400,7 @@ export function useDraggable() {
       onPointerUp,
       onPointerCancel,
       onLostPointerCapture,
+      onClickCapture,
     },
   };
 }

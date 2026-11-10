@@ -4,6 +4,14 @@ import { COMPANION_CARD_HEIGHT, COMPANION_CARD_WIDTH } from '@webmate/shared';
 export interface CompanionPlaceholderProps {
   /** Indicates whether the container is actively being dragged by pointer */
   isDragging?: boolean;
+  /** Whether the built-in Avatar Studio customizer panel is open */
+  isCustomizerOpen?: boolean;
+  /** Number of canonical rig layers customized away from original artwork */
+  customLayerCount?: number;
+  /** Toggles the Shadow DOM Avatar Studio interface */
+  onToggleCustomizer?: () => void;
+  /** Optional ref for restoring keyboard focus when the customizer closes */
+  customizeButtonRef?: React.RefObject<HTMLButtonElement>;
 }
 
 /**
@@ -15,17 +23,29 @@ export interface CompanionPlaceholderProps {
  */
 export const CompanionPlaceholder: React.FC<CompanionPlaceholderProps> = ({
   isDragging = false,
+  isCustomizerOpen = false,
+  customLayerCount = 0,
+  onToggleCustomizer,
+  customizeButtonRef,
 }) => {
+  const statusLabel =
+    customLayerCount > 0 ? `${customLayerCount} Styled` : 'Companion Ready';
+
   return (
     <div
       id="webmate-companion-card"
-      className="webmate-card flex items-center gap-3 px-3.5 py-3 rounded-xl bg-slate-900 border border-slate-700/80 shadow-2xl shadow-black/40 select-none text-slate-100"
+      className="webmate-card flex items-center select-none text-slate-100"
       style={{
         width: `${COMPANION_CARD_WIDTH}px`,
         height: `${COMPANION_CARD_HEIGHT}px`,
+        padding: '0 8px',
+        gap: '6px',
         boxSizing: 'border-box',
         backgroundColor: '#0F172A',
-        borderColor: isDragging ? '#3B82F6' : '#334155',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: isDragging ? '#3B82F6' : isCustomizerOpen ? '#60A5FA' : '#334155',
+        borderRadius: '12px',
         color: '#F8FAFC',
         boxShadow: isDragging
           ? '0 25px 35px -5px rgba(0, 0, 0, 0.6), 0 12px 16px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.4)'
@@ -35,69 +55,126 @@ export const CompanionPlaceholder: React.FC<CompanionPlaceholderProps> = ({
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
       }}
     >
-      {/* Companion Logo Icon / Avatar Placeholder */}
+      {/* Companion Logo Icon */}
       <div
-        className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shrink-0 shadow-inner"
+        className="flex items-center justify-center shrink-0"
         style={{
-          width: '40px',
-          height: '40px',
+          width: '32px',
+          height: '32px',
           backgroundColor: '#2563EB',
           borderRadius: '8px',
+          flexShrink: 0,
         }}
       >
         <span
-          className="text-white font-bold text-xs tracking-wider"
-          style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '13px' }}
+          style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '11px', letterSpacing: '0.03em' }}
         >
           WM
         </span>
       </div>
 
       {/* Companion Identity & Status */}
-      <div className="flex flex-col min-w-0 justify-center">
-        <div className="flex items-center gap-1.5">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          minWidth: 0,
+          justifyContent: 'center',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <span
-            className="text-sm font-semibold text-white tracking-tight leading-tight truncate"
-            style={{ color: '#FFFFFF', fontWeight: 600, fontSize: '14px', lineHeight: '1.2' }}
+            style={{
+              color: '#FFFFFF',
+              fontWeight: 600,
+              fontSize: '12.5px',
+              lineHeight: '1.2',
+              whiteSpace: 'nowrap',
+            }}
           >
             WebMate
           </span>
           <span
-            className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-mono bg-blue-950 text-blue-300 border border-blue-800/60"
             style={{
-              fontSize: '10px',
-              padding: '1px 5px',
+              fontSize: '9px',
+              lineHeight: '1.2',
+              padding: '1px 4px',
               backgroundColor: '#172554',
               color: '#93C5FD',
-              borderColor: '#1E40AF',
+              border: '1px solid rgba(30, 64, 175, 0.7)',
               borderRadius: '4px',
+              fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
             }}
           >
             v0.1
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 mt-0.5">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
           <span
-            className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 animate-pulse"
             style={{
               width: '6px',
               height: '6px',
               borderRadius: '9999px',
-              backgroundColor: '#34D399',
+              backgroundColor: customLayerCount > 0 ? '#60A5FA' : '#34D399',
+              flexShrink: 0,
             }}
           />
           <span
-            className="text-[11px] text-slate-400 font-medium truncate"
-            style={{ color: '#94A3B8', fontSize: '11px', lineHeight: '1.2' }}
+            style={{
+              color: '#94A3B8',
+              fontSize: '10.5px',
+              lineHeight: '1.2',
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
-            Companion Ready
+            {statusLabel}
           </span>
         </div>
       </div>
+
+      {/* Interactive Avatar Studio Trigger */}
+      {onToggleCustomizer && (
+        <button
+          ref={customizeButtonRef}
+          type="button"
+          className={`webmate-customize-trigger ${isCustomizerOpen ? 'is-open' : ''}`}
+          aria-expanded={isCustomizerOpen}
+          aria-controls="webmate-customizer-panel"
+          aria-label={isCustomizerOpen ? 'Close mascot avatar studio' : 'Customize mascot avatar'}
+          title={isCustomizerOpen ? 'Close avatar studio' : 'Customize avatar'}
+          onPointerDown={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleCustomizer();
+          }}
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 16 16"
+            fill="none"
+            aria-hidden="true"
+            style={{ flexShrink: 0 }}
+          >
+            <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+            <path
+              d="M3.5 13C4.2 10.6 5.9 9.5 8 9.5C10.1 9.5 11.8 10.6 12.5 13"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span>Style</span>
+        </button>
+      )}
     </div>
   );
 };
 
 export default CompanionPlaceholder;
-
